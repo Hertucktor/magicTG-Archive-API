@@ -13,13 +13,15 @@ func main(){
 		log.Err(err)
 	}
 	fmt.Println(response.StatusCode)
-	fmt.Println(response.Body)
+
+
 
 }
 /*
 ImportCardInfo receives a response with type *http.Response from
 the official mtg api containing all available card detail for one card
 specified with the multiverseID
+Returning the response and an error
  */
 func ImportCardInfo() (*http.Response, error) {
 	URL := "https://api.magicthegathering.io/v1/cards/"
