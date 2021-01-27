@@ -1,4 +1,8 @@
-package main
+package importer
+
+type Error struct {
+	Error string `json:"error"`
+}
 
 type Card struct {
 	Name string `json:"name"`
@@ -12,23 +16,23 @@ type Card struct {
 	SubTypes []string `json:"subtypes"`
 	Rarity string `json:"rarity"`
 	Set string `json:"set"`
-	SetName  string `json:"setName"`
-	Text string `json:"text"`
-	Artist string `json:"artist"`
-	Number string `json:"number"`
-	Power string `json:"power"`
-	Toughness string `json:"toughness"`
-	Layout string `json:"layout"`
-	MultiverseId int `json:"multiverseid"`
-	ImageURL string `json:"imageUrl"`
-	Watermark string `json:"watermark"`
-	Rulings []Ruling `json:"rulings"`
+	SetName  string            `json:"setName"`
+	Text string                `json:"text"`
+	Artist string              `json:"artist"`
+	Number string              `json:"number"`
+	Power string               `json:"power"`
+	Toughness string           `json:"toughness"`
+	Layout string              `json:"layout"`
+	MultiverseId int           `json:"multiverseid"`
+	ImageURL string            `json:"imageUrl"`
+	Watermark string           `json:"watermark"`
+	Rulings []Ruling           `json:"rulings"`
 	ForeignNames []ForeignName `json:"foreignNames"`
-	Printings []string `json:"printings"`
-	OriginalText string `json:"originalText"`
-	OriginalType string `json:"originalType"`
-	Legalities []Legal `json:"legalities"`
-	ID string `json:"id"`
+	Printings []string         `json:"printings"`
+	OriginalText string        `json:"originalText"`
+	OriginalType string        `json:"originalType"`
+	Legalities []Legal         `json:"legalities"`
+	ID string                  `json:"id"`
 }
 
 type Ruling struct {
@@ -49,3 +53,4 @@ type Legal struct {
 	Format string `json:"format"`
 	Legality string `json:"legality"`
 }
+

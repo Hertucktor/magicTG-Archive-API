@@ -16,13 +16,13 @@ func TestImportCardInfo(t *testing.T) {
 
 	}*/
 	codes := []int{400, 403,404, 500, 503}
-	descriptions := []string{"We could not process that action","You exceeded the rate limit","The requested resource could not be found","We had a problem with our server. Please try again later", "We are temporarily offline for maintenance. Please try again later"}
+	descriptions := []string{"We could not process that action","You exceeded the rate limit","not-found","We had a problem with our server. Please try again later", "We are temporarily offline for maintenance. Please try again later"}
 
-	response := ImportCardInfo
-	if !containsIntInSliceInts(codes, response.Code){
+	respCode, respDescription, err := ImportCardInfo()
+	if !containsIntInSliceInts(codes, respCode){
 		t.Fatalf("Expected one of those http codes: %v, got: %v")
 	}
-	if !containsStringInSliceStrings(descriptions, response.Description){
+	if !containsStringInSliceStrings(descriptions, respDescription){
 		t.Fatalf("Expected one of those descriptions: %v\n, got: %v")
 	}
 }
