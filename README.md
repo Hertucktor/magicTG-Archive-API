@@ -11,3 +11,9 @@ best practices for handling the errors returned when a rate limit is reached.
 Third-party applications are currently throttled to 5000 requests per hour. 
 As this API continues to age, the rate limits may be updated to provide better performance to users
 ```
+##Makefile
+
+```
+program execution automation with Makefile:
+type: make importer -B; To test compile and execute the mtg card importer
+```
