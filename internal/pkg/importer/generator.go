@@ -10,7 +10,6 @@ func URLGenerator(lang string, cardName string) string{
 	var URL string
 	cardName = strings.ReplaceAll(cardName, " ", "+")
 
-	fmt.Println(lang)
 	if lang == "de" {
 		foreignLang = "&language=german"
 	} else {
