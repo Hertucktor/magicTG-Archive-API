@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func ReadFromCLI() (string,error) {
+func ReadFromCLI() (string, error) {
 	var input string
 
 	app := cli.NewApp()
@@ -18,7 +18,7 @@ func ReadFromCLI() (string,error) {
 		&cli.StringFlag{
 			Name: "lang",
 			Value: "en",
-			Usage: "language for the greeting",
+			Usage: "language for cli",
 			Required: true,
 		},
 	}
@@ -32,10 +32,9 @@ func ReadFromCLI() (string,error) {
 			fmt.Print("Enter the card name: ")
 			input, _ = reader.ReadString('\n')
 		}
+		fmt.Print(input)
 		return nil
 	}
-
-
 
 	err := app.Run(os.Args)
 	if err != nil {
