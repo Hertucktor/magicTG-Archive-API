@@ -1,6 +1,5 @@
 .idea
+mongo-volume
 c.out
 coverage.html
-./importer
-./cli
 init-mongo.js
