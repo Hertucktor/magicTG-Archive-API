@@ -20,12 +20,12 @@ func main() {
 		log.Fatal().Err(err)
 	}
 
-	client, err := mongodb.CreateClient()
+	client, ctx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Fatal().Err(err)
 	}
 
-	err = mongodb.InsertCardInfo(cardInfo, client)
+	err = mongodb.InsertCardInfo(cardInfo, client, ctx)
 	if err != nil {
 		log.Fatal().Err(err)
 	}

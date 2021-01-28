@@ -8,7 +8,13 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 
-func InsertCardInfo(cardInfo importer.MTGResponse, client *mongo.Client) error{
+func InsertCardInfo(cardInfo importer.MTGResponse, client *mongo.Client, ctx context.Context) error {
+
+	defer func() {
+		err := client.Disconnect(ctx)
+		log.Err(err)
+	}()
+
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
 	insertResult, err := collection.InsertOne(context.TODO(), cardInfo)
