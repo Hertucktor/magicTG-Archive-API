@@ -7,13 +7,15 @@ import (
 	"net/http"
 )
 
+const URL = "https://api.magicthegathering.io/v1/cards"
+
 /*
 RequestCardInfo receives a response with type *http.Response from
 the official mtg api containing all available card detail for one card
 specified with the multiverseID
 Returning the response and an error
 */
-func RequestCardInfo(URL string, filter string) (MTGResponse, error) {
+func RequestCardInfo(filter string) (MTGResponse, error) {
 	var response MTGResponse
 
 	resp, err := http.Get(URL+filter)

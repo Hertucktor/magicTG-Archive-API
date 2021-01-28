@@ -1,13 +1,17 @@
 package importer
 
-import (
-	"fmt"
-	"github.com/rs/zerolog/log"
-)
+func FilterSelector (lang string) string{
+	var filter string
+	if lang == "de" {
+		filter = "&language=german"
+	} else {
+		return ""
+	}
 
-const URL = "https://api.magicthegathering.io/v1/cards"
+	return filter
+}
 
-func HandleRequest(filter string) error{
+/*func HandleRequest(filter string) error{
 
 	card,err := RequestCardInfo(URL, filter)
 	if err != nil {
@@ -18,4 +22,4 @@ func HandleRequest(filter string) error{
 		fmt.Println(card.ImageURL)
 	}
 	return err
-}
+}*/
