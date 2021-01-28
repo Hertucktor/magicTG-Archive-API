@@ -7,4 +7,5 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
+	go.mongodb.org/mongo-driver v1.4.5
 )
