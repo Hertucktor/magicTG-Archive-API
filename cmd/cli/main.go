@@ -8,32 +8,26 @@ import (
 )
 
 func main(){
-	var language string
+	app := cli.NewApp()
 
+	app.Flags = []cli.Flag {
+		&cli.StringFlag{
+			Name: "lang",
+			Value: "english",
+			Usage: "language for the greeting",
+			Required: true,
+		},
+	}
 
-	app := &cli.App{
-		Flags: []cli.Flag {
-			&cli.StringFlag{
-				Name:        "lang",
-				Value:       "en",
-				Usage:       "language for the card name",
-				Destination: &language,
-			},
-		},
-		Action: func(c *cli.Context) error {
-			name := "Vincent"
-			if c.NArg() > 0 {
-				name = c.Args().Get(0)
-			}
-			if language == "de"  {
-				//execute import with german foreign name filter
-				fmt.Println("Moin", name)
-			} else {
-				//execute import with english name filter
-				fmt.Println("Hello", name)
-			}
-			return nil
-		},
+	app.Action = func(c *cli.Context) error {
+		var output string
+		if c.String("lang") == "de" {
+			output = "Moin"
+		} else {
+			output = "Hello"
+		}
+		fmt.Println(output)
+		return nil
 	}
 
 	err := app.Run(os.Args)
