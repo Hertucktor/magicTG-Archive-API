@@ -4,3 +4,5 @@ test:
 importer:
 	go build -o app --mod=vendor ./cmd ;\
     ./app
+db:
+	docker-compose up
