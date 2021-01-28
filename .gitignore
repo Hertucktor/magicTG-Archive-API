@@ -3,3 +3,4 @@ c.out
 coverage.html
 ./importer
 ./cli
+init-mongo.js
