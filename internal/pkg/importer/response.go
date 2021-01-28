@@ -1,9 +1,5 @@
 package importer
 
-type Error struct {
-	Error string `json:"error"`
-}
-
 type Card struct {
 	Name string `json:"name"`
 	ManaCost string `json:"manaCost"`

@@ -2,7 +2,6 @@ package importer
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
@@ -15,7 +14,6 @@ specified with the multiverseID
 Returning the response and an error
 */
 func RequestCardInfo(URL string, filter string) error {
-	//var customError Error
 	var card Card
 
 	resp, err := http.Get(URL+filter)
@@ -29,8 +27,6 @@ func RequestCardInfo(URL string, filter string) error {
 			log.Print(err)
 		}
 	}()
-
-	fmt.Println(resp.StatusCode)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
