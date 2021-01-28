@@ -13,12 +13,13 @@ the official mtg api containing all available card detail for one card
 specified with the multiverseID
 Returning the response and an error
 */
-func RequestCardInfo(URL string, filter string) error {
+func RequestCardInfo(URL string, filter string) (Card, error) {
 	var card Card
 
 	resp, err := http.Get(URL+filter)
 	if err != nil {
 		log.Print(err)
+		return Card{}, err
 	}
 
 	defer func() {
@@ -31,21 +32,14 @@ func RequestCardInfo(URL string, filter string) error {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Err(err)
+		return Card{}, err
 	}
 
 	err = json.Unmarshal(body,&card)
 	if err != nil {
 		log.Err(err)
-		return err
+		return Card{}, err
 	}
 
-
-	//err = json.Unmarshal(body, &card)
-	//if err != nil {
-	//	log.Err(err)
-	//	fmt.Println(card)
-	//	return card, resp.StatusCode, err
-	//}
-
-	return err
+	return card, err
 }
