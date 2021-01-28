@@ -28,8 +28,11 @@ func main() {
 		log.Fatal().Err(err)
 	}*/
 
-	err = mongodb.GetAllCardInfo(client, ctx)
-	if err != nil {
+	/*if err = mongodb.GetAllCardInfo(client, ctx); err != nil{
+		log.Fatal().Err(err)
+	}*/
+
+	if err = mongodb.GetFilteredSingleCardInfo(client, ctx); err != nil{
 		log.Fatal().Err(err)
 	}
 

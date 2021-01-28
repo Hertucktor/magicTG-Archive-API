@@ -40,11 +40,39 @@ func GetAllCardInfo(client *mongo.Client, ctx context.Context) error{
 	if err != nil {
 		log.Fatal().Err(err)
 	}
-	var cards []bson.M
-	if err = cursor.All(ctx, &cards); err != nil {
-		log.Fatal().Err(err)
+	defer func() {
+		err := cursor.Close(ctx)
+		if err != nil {
+			log.Error().Err(err)
+		}
+	}()
+	for cursor.Next(ctx) {
+		var episode bson.M
+		if err = cursor.Decode(&episode); err != nil {
+			log.Fatal().Err(err)
+		}
+		fmt.Println(episode)
 	}
-	fmt.Println(cards)
 
 	return err
+}
+//FIXME: Receive One specific Document by filter
+func GetFilteredSingleCardInfo(client *mongo.Client, ctx context.Context) error {
+	var cardInfo importer.MTGResponse
+
+	defer func() {
+		err := client.Disconnect(ctx)
+		log.Err(err)
+	}()
+
+	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+
+	if err := collection.FindOne(context.TODO(), bson.D{}).Decode(&cardInfo); err != nil {
+		log.Error().Err(err)
+		return err
+	} else {
+		fmt.Println("FindOne() results:", cardInfo)
+	}
+
+	return nil
 }
