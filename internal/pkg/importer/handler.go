@@ -7,15 +7,15 @@ import (
 
 const URL = "https://api.magicthegathering.io/v1/cards"
 
-func HandleRequest(){
-	filter := "?name=Archangel Avacyn"
+func HandleRequest(filter string) error{
 
 	card,err := RequestCardInfo(URL, filter)
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	for _, card := range card.Cards{
 		fmt.Println(card.ImageURL)
 	}
+	return err
 }
