@@ -14,12 +14,12 @@ specified with the multiverseID
 Returning the response and an error
 */
 func RequestCardInfo(URL string, filter string) (MTGResponse, error) {
-	var card MTGResponse
+	var response MTGResponse
 
 	resp, err := http.Get(URL+filter)
 	if err != nil {
 		log.Print(err)
-		return card, err
+		return response, err
 	}
 
 	defer func() {
@@ -31,20 +31,20 @@ func RequestCardInfo(URL string, filter string) (MTGResponse, error) {
 
 	if resp.StatusCode != 200{
 		log.Error().Msg(resp.Status)
-		return card, nil
+		return response, nil
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Err(err)
-		return card, err
+		return response, err
 	}
 
-	err = json.Unmarshal(body, &card)
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Err(err)
-		return card, err
+		return response, err
 	}
 
-	return card, err
+	return response, err
 }
