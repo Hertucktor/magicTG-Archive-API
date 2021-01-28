@@ -2,12 +2,11 @@ package importer
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
 )
-
-
 
 /*
 RequestCardInfo receives a response with type *http.Response from
@@ -31,11 +30,14 @@ func RequestCardInfo(URL string, filter string) error {
 		}
 	}()
 
+	fmt.Println(resp.StatusCode)
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Err(err)
 	}
-	err = UnmarshalJSON(body,&card)
+
+	err = json.Unmarshal(body,&card)
 	if err != nil {
 		log.Err(err)
 		return err
@@ -49,11 +51,5 @@ func RequestCardInfo(URL string, filter string) error {
 	//	return card, resp.StatusCode, err
 	//}
 
-	return err
-}
-
-func UnmarshalJSON(data []byte, v interface{}) error{
-	err := json.Unmarshal(data, &v)
-	log.Err(err)
 	return err
 }
