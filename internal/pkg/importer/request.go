@@ -15,10 +15,11 @@ the official mtg api containing all available card detail for one card
 specified with the multiverseID
 Returning the response and an error
 */
-func RequestCardInfo(filter string) (MTGResponse, error) {
+func RequestCardInfo(cardName string, filterLang string) (MTGResponse, error) {
 	var response MTGResponse
+	nameFilter := "?name=" + cardName
 
-	resp, err := http.Get(URL+filter)
+	resp, err := http.Get(URL+ nameFilter +filterLang)
 	if err != nil {
 		log.Print(err)
 		return response, err
