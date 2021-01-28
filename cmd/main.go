@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/cli"
 	"magicTGArchive/internal/pkg/importer"
+	"magicTGArchive/internal/pkg/mongodb"
 )
 
 func main() {
@@ -14,7 +15,17 @@ func main() {
 
 	URL := importer.URLGenerator(language, cardName)
 
-	_, err = importer.RequestCardInfo(URL)
+	cardInfo, err := importer.RequestCardInfo(URL)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
+	client, err := mongodb.CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
+	err = mongodb.InsertCardInfo(cardInfo, client)
 	if err != nil {
 		log.Fatal().Err(err)
 	}
