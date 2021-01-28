@@ -2,12 +2,12 @@ package importer
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
-	"reflect"
 )
+
+
 
 /*
 RequestCardInfo receives a response with type *http.Response from
@@ -15,15 +15,11 @@ the official mtg api containing all available card detail for one card
 specified with the multiverseID
 Returning the response and an error
 */
-func RequestCardInfo() (int, string, error) {
+func RequestCardInfo(URL string, filter string) error {
 	//var customError Error
 	var card Card
-	//var card importer.Card
-	URL := "https://api.magicthegathering.io/v/cards/"
-	multiverseID := "386616"
 
-
-	resp, err := http.Get(URL+multiverseID)
+	resp, err := http.Get(URL+filter)
 	if err != nil {
 		log.Print(err)
 	}
@@ -39,10 +35,10 @@ func RequestCardInfo() (int, string, error) {
 	if err != nil {
 		log.Err(err)
 	}
-	err := UnmarshalJSON(body,&card)
+	err = UnmarshalJSON(body,&card)
 	if err != nil {
 		log.Err(err)
-		return
+		return err
 	}
 
 
@@ -53,7 +49,7 @@ func RequestCardInfo() (int, string, error) {
 	//	return card, resp.StatusCode, err
 	//}
 
-	return resp.StatusCode,"", err
+	return err
 }
 
 func UnmarshalJSON(data []byte, v interface{}) error{
