@@ -35,15 +35,14 @@ func ReadFromCLI() (string, string, error) {
 			fmt.Print("Enter the card name: ")
 			input, _ = reader.ReadString('\n')
 		}
-		fmt.Print(input)
 		return nil
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Error().Err(err)
-		return "","", err
+		return "", "", err
 	}
 
-	return language,input, err
+	return language, input, err
 }
