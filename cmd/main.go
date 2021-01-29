@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
-	"magicTGArchive/internal/pkg/cli"
-	"magicTGArchive/internal/pkg/importer"
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
 func main() {
-
+/*
 	language, cardName, err := cli.ReadFromCLI()
 	if err != nil {
 		log.Fatal().Err(err)
@@ -22,12 +19,6 @@ func main() {
 	cardInfo, err := importer.RequestCardInfo(URL)
 	if err != nil {
 		log.Fatal().Err(err)
-	}
-
-	/*for _, cards := range cardInfo.Cards{
-		for _, names := range cards.ForeignNames {
-			fmt.Println(names.Language)
-		}
 	}*/
 
 	client, ctx, err := mongodb.CreateClient()
@@ -35,15 +26,19 @@ func main() {
 		log.Fatal().Err(err)
 	}
 
-	if err = mongodb.InsertCardInfo(cardInfo, client, ctx); err != nil {
-		log.Fatal().Err(err)
-	}
+	/*for _,cards := range cardInfo.Cards{
+		if err = mongodb.InsertCardInfo(cards, client, ctx); err != nil {
+			log.Fatal().Err(err)
+		}
+	}*/
+
 	/*
 	if err = mongodb.GetAllCardInfo(client, ctx); err != nil{
 		log.Fatal().Err(err)
-	}
-
-	if err = mongodb.GetFilteredSingleCardInfo(client, ctx); err != nil{
-		log.Fatal().Err(err)
 	}*/
+
+	cardName := "Quicksand"
+	if err = mongodb.GetFilteredSingleCardInfo(cardName, client, ctx); err != nil{
+		log.Fatal().Err(err)
+	}
 }
