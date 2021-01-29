@@ -9,7 +9,7 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 //FIXME: Don't allow inserts of duplicates
-func InsertCardInfo(cardInfo importer.MTGResponse, client *mongo.Client, ctx context.Context) error {
+func InsertCardInfo(cardInfo importer.APIResponse, client *mongo.Client, ctx context.Context) error {
 
 	defer func() {
 		err := client.Disconnect(ctx)
@@ -58,8 +58,6 @@ func GetAllCardInfo(client *mongo.Client, ctx context.Context) error{
 }
 //FIXME: Receive One specific Document by filter
 func GetFilteredSingleCardInfo(client *mongo.Client, ctx context.Context) error {
-	var cardInfo importer.MTGResponse
-
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -67,12 +65,18 @@ func GetFilteredSingleCardInfo(client *mongo.Client, ctx context.Context) error 
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
-	if err := collection.FindOne(context.TODO(), bson.D{}).Decode(&cardInfo); err != nil {
+	filterCursor, err := collection.Find(ctx, bson.M{"name":"Quicksand"})
+	if err != nil {
 		log.Error().Err(err)
 		return err
-	} else {
-		fmt.Println("FindOne() results:", cardInfo)
 	}
+	var cardInfoFiltered []bson.M
+	if err = filterCursor.All(ctx, &cardInfoFiltered); err != nil {
+		log.Error().Err(err)
+		return err
+	}
+
+	fmt.Println(cardInfoFiltered)
 
 	return nil
 }

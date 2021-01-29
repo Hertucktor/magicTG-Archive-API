@@ -13,8 +13,8 @@ the official mtg api containing all available card detail for one card
 specified with the multiverseID
 Returning the response and an error
 */
-func RequestCardInfo(URL string) (MTGResponse, error) {
-	var response MTGResponse
+func RequestCardInfo(URL string) (APIResponse, error) {
+	var response APIResponse
 
 	resp, err := http.Get(URL)
 	if err != nil {
