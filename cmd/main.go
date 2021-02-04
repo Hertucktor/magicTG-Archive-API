@@ -27,18 +27,22 @@ func main() {
 	}
 
 	/*for _,cards := range cardInfo.Cards{
-		if err = mongodb.InsertCardInfo(cards, client, ctx); err != nil {
+		if err = mongodb.InsertCard(cards, client, ctx); err != nil {
 			log.Fatal().Err(err)
 		}
 	}*/
 
 	/*
-	if err = mongodb.GetAllCardInfo(client, ctx); err != nil{
+	if err = mongodb.AllCardInfo(client, ctx); err != nil{
 		log.Fatal().Err(err)
 	}*/
 
 	cardName := "Quicksand"
-	if err = mongodb.GetFilteredSingleCardInfo(cardName, client, ctx); err != nil{
+	/*if err = mongodb.SingleCardInfo(cardName, client, ctx); err != nil{
+		log.Fatal().Err(err)
+	}*/
+	if err = mongodb.DeleteSingleCard(cardName, client, ctx); err != nil{
 		log.Fatal().Err(err)
 	}
+
 }

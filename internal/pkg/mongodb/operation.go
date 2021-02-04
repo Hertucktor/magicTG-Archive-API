@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/importer"
 )
-//FIXME: Don't allow inserts of duplicates
-func InsertCardInfo(cardInfo importer.Cards, client *mongo.Client, ctx context.Context) error {
+//FIXME: If insert of duplicates increase the quantity counter by +1
+func InsertCard(cardInfo importer.Cards, client *mongo.Client, ctx context.Context) error {
 
 	defer func() {
 		err := client.Disconnect(ctx)
@@ -28,7 +28,7 @@ func InsertCardInfo(cardInfo importer.Cards, client *mongo.Client, ctx context.C
 	return err
 }
 
-func GetAllCardInfo(client *mongo.Client, ctx context.Context) error{
+func AllCardInfo(client *mongo.Client, ctx context.Context) error{
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -56,8 +56,8 @@ func GetAllCardInfo(client *mongo.Client, ctx context.Context) error{
 
 	return err
 }
-//FIXME: Receive One specific Document by filter
-func GetFilteredSingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) error {
+
+func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) error {
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -79,6 +79,24 @@ func GetFilteredSingleCardInfo(cardName string, client *mongo.Client, ctx contex
 	}
 
 	fmt.Println(cardInfoFiltered)
+
+	return nil
+}
+
+func DeleteSingleCard(cardName string, client *mongo.Client, ctx context.Context) error {
+	defer func() {
+		err := client.Disconnect(ctx)
+		log.Err(err)
+	}()
+
+	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+
+	result, err := collection.DeleteOne(ctx, bson.M{"name": cardName})
+	if err != nil {
+		log.Error().Err(err)
+		return err
+	}
+	fmt.Printf("DeleteOne removed %v document(s)\n", result.DeletedCount)
 
 	return nil
 }
