@@ -35,6 +35,7 @@ type Cards struct {
 	OriginalType  string         `json:"originalType,omitempty"`
 	Legalities    []Legalities   `json:"legalities,omitempty"`
 	ID            string         `json:"id,omitempty"`
+	Quantity	  int 			 `json:"quantity"`
 }
 type Rulings struct {
 	Date string `json:"date"`
