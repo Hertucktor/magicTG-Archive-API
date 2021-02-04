@@ -23,7 +23,7 @@ As this API continues to age, the rate limits may be updated to provide better p
 ###Configure Credentials for MongoDB in Docker
 ```
 nano init-mongo.js : update credentials and database name to your liking
-if you change the db name, don't forget to change it in client.go at line 13 and in the docker-compose.yml
+if you change the db name or user credentials, don't forget to change it in client.go at line 13 and in the docker-compose.yml
 ```
 ###Makefile
 ```
