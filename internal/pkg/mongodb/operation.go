@@ -100,3 +100,25 @@ func DeleteSingleCard(cardName string, client *mongo.Client, ctx context.Context
 
 	return nil
 }
+
+func UpdateSingleCard(cardName string, client *mongo.Client, ctx context.Context) error {
+	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+
+	//quantity := findDocumentWithCardNameAndSafeQuantityToVariable
+
+	result, err := collection.UpdateOne(
+		ctx,
+		bson.M{"name": cardName},
+		bson.D{
+		{"$set", bson.D{{"quantity", 2}}},
+		},
+	)
+	if err != nil {
+		log.Error().Err(err)
+		return err
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+
+
+	return nil
+}

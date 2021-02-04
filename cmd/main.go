@@ -26,11 +26,16 @@ func main() {
 	}
 
 	for _,cards := range cardInfo.Cards{
-		cards.Quantity = 1
+		/*cards.Quantity = 1
 		if err = mongodb.InsertCard(cards, client, ctx); err != nil {
+			log.Fatal().Err(err)
+		}*/
+		if err = mongodb.UpdateSingleCard(cards.Name, client, ctx); err != nil {
 			log.Fatal().Err(err)
 		}
 	}
+
+
 
 
 	/*
