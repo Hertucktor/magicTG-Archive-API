@@ -15,20 +15,28 @@ func InsertCard(cardInfo importer.Cards, client *mongo.Client, ctx context.Conte
 		log.Err(err)
 	}()
 
-	_, err := SingleCardInfo(cardInfo.Name, client, ctx)
+	results, err := SingleCardInfo(cardInfo.Name, client, ctx)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
+	fmt.Println(results)
+	if results == nil {
+		fmt.Printf("no document found with name: %v", cardInfo.Name)
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+		collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
-	insertResult, err := collection.InsertOne(context.TODO(), cardInfo)
-	if err != nil {
-		log.Error().Err(err)
-		return err
+		insertResult, err := collection.InsertOne(context.TODO(), cardInfo)
+		if err != nil {
+			log.Error().Err(err)
+			return err
+		}
+		fmt.Println("Inserted card with ID:", insertResult.InsertedID)
+
+	}else {
+		fmt.Printf("document found with name: %v", cardInfo.Name)
+		fmt.Println("Here update")
 	}
-	fmt.Println("Inserted card with ID:", insertResult.InsertedID)
 
 	return err
 }
@@ -64,11 +72,11 @@ func AllCardInfo(client *mongo.Client, ctx context.Context) error{
 
 func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) ([]DBCards, error) {
 	var cardInfoFiltered []DBCards
-
+	/*
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
-	}()
+	}()*/
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
