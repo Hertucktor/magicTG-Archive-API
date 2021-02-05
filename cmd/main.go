@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
 	"magicTGArchive/internal/pkg/mongodb"
+	"strconv"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 	}*/
 
 	var URL string
-	var multiverseID int
+	var multiverseID string
 	language := "en"
 	cardName := "Quicksand"
 	setName := "Worldwake"
@@ -27,7 +28,7 @@ func main() {
 
 	for _, card := range multipleCards.Cards{
 		if card.SetName == setName {
-			multiverseID = card.Multiverseid
+			multiverseID = strconv.Itoa(card.Multiverseid)
 		}
 	}
 	URL = importer.URLForMultiverserID(multiverseID)

@@ -2,7 +2,6 @@ package importer
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -23,9 +22,8 @@ func URLByCardNameAndLanguage(lang string, cardName string) string{
 	return URL
 }
 
-func URLForMultiverserID(multiverseID int) (URL string) {
-	ID := strconv.Itoa(multiverseID)
-	URL = fmt.Sprint("https://api.magicthegathering.io/v1/cards/"+ ID)
+func URLForMultiverserID(multiverseID string) (URL string) {
+	URL = fmt.Sprint("https://api.magicthegathering.io/v1/cards/"+ multiverseID)
 
 	return
 }
