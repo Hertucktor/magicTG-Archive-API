@@ -7,7 +7,7 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 //FIXME: If insert of duplicates increase the quantity counter by +1
-func InsertCard(cardInfo importer.Cards) error {
+func InsertCard(cardInfo importer.Card) error {
 	/*var cardName string
 	var cardQuantity int*/
 
