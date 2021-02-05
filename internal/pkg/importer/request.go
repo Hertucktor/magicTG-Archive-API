@@ -46,6 +46,10 @@ func RequestMultipleInfosOfOneCard(URL string) (APIResponseForMultipleCards, err
 		return response, err
 	}
 
+	if response.Cards != nil{
+
+	}
+
 	return response, err
 }
 

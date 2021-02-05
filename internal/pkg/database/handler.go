@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
 	"magicTGArchive/internal/pkg/mongodb"
@@ -14,9 +13,6 @@ func InsertDataset(cardInfo importer.APIResponseForOneCard) error {
 		log.Error().Err(err)
 		return err
 	}
-
-	fmt.Println(card)
-	fmt.Println(cardInfo.Card.Name)
 
 	if card.ID != "" {
 		if err := mongodb.UpdateSingleCard(cardInfo.Card.Name, card.Quantity); err != nil {

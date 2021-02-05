@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/cli"
 	"magicTGArchive/internal/pkg/database"
@@ -18,6 +19,7 @@ func main() {
 	}
 
 	URL = importer.URLByCardNameAndLanguage(language, cardName)
+	fmt.Println(URL)
 
 	multipleCards, err := importer.RequestMultipleInfosOfOneCard(URL)
 	if err != nil {
