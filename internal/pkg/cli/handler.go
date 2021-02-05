@@ -8,8 +8,9 @@ import (
 	"os"
 )
 
-func ReadFromCLI() (string, string, error) {
-	var input string
+func ReadFromCLI() (string, string,string, error) {
+	var inputCardName string
+	var inputSetName string
 	var language string
 
 	app := cli.NewApp()
@@ -29,11 +30,15 @@ func ReadFromCLI() (string, string, error) {
 		if c.String("lang") == "de" {
 			language = "de"
 			fmt.Print("Trage den Kartennamen ein: ")
-			input, _ = reader.ReadString('\n')
+			inputCardName, _ = reader.ReadString('\n')
+			fmt.Print("Trage den Setnamen ein: ")
+			inputSetName, _ = reader.ReadString('\n')
 		} else {
 			language = "en"
 			fmt.Print("Enter the card name: ")
-			input, _ = reader.ReadString('\n')
+			inputCardName, _ = reader.ReadString('\n')
+			fmt.Print("Enter the set name: ")
+			inputSetName, _ = reader.ReadString('\n')
 		}
 		return nil
 	}
@@ -41,8 +46,8 @@ func ReadFromCLI() (string, string, error) {
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Error().Err(err)
-		return "", "", err
+		return "", "", "", err
 	}
 
-	return language, input, err
+	return language, inputCardName, inputSetName, err
 }

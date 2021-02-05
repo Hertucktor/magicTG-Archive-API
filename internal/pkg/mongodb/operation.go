@@ -35,13 +35,10 @@ func InsertCard(cardInfo importer.Cards) error {
 		log.Error().Err(err)
 		return err
 	}
-
 	//When there is no document with the given name, insert new document
 	if results == nil {
 		//log.Info().Msgf("no document found with name: ", cardInfo.Name)
-
 		collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
-
 		insertResult, err := collection.InsertOne(context.TODO(), cardInfo)
 		if err != nil {
 			log.Error().Err(err)
@@ -58,7 +55,6 @@ func InsertCard(cardInfo importer.Cards) error {
 			log.Error().Err(err)
 			return err
 		}
-
 	}*/
 
 	return err
@@ -170,7 +166,7 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		ctx,
 		bson.M{"name": cardName},
 		bson.D{
-		{"$set", bson.D{{"quantity", newQuantity}}},
+			{"$set", bson.D{{"quantity", newQuantity}}},
 		},
 	)
 	if err != nil {
@@ -178,7 +174,7 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		return err
 	}
 	/*
-	log.Info().Msgf("Updated %v Documents!\n", result.ModifiedCount)*/
+		log.Info().Msgf("Updated %v Documents!\n", result.ModifiedCount)*/
 
 	return nil
 }

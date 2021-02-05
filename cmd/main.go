@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
+	"magicTGArchive/internal/pkg/mongodb"
 )
 
 func main() {
-	/*language, cardName, err := cli.ReadFromCLI()
+	/*language, cardName, setName, err := cli.ReadFromCLI()
 	if err != nil {
 		log.Fatal().Err(err)
 	}*/
+
 	var URL string
 	var multiverseID int
 	language := "en"
@@ -34,9 +36,9 @@ func main() {
 	singleCard, err := importer.RequestOneCard(URL)
 	fmt.Println(singleCard)
 
-	/*if err = mongodb.InsertCard(card); err != nil {
+	if err = mongodb.InsertCard(singleCard.Card); err != nil {
 		log.Fatal().Err(err)
-	}*/
+	}
 
 	/*
 	if err = mongodb.AllCardInfo(client, ctx); err != nil{
