@@ -9,13 +9,17 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 //FIXME: If insert of duplicates increase the quantity counter by +1
-func InsertCard(cardInfo importer.Cards, client *mongo.Client, ctx context.Context) error {
+func InsertCard(cardInfo importer.Cards) error {
+	client, ctx, err := CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
 	}()
 
-	results, err := SingleCardInfo(cardInfo.Name, client, ctx)
+	results, err := SingleCardInfo(cardInfo.Name)
 	if err != nil {
 		log.Error().Err(err)
 		return err
@@ -70,8 +74,12 @@ func AllCardInfo(client *mongo.Client, ctx context.Context) error{
 	return err
 }
 
-func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) ([]DBCards, error) {
+func SingleCardInfo(cardName string) ([]DBCards, error) {
 	var cardInfoFiltered []DBCards
+	client, ctx, err := CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 	/*
 	defer func() {
 		err := client.Disconnect(ctx)

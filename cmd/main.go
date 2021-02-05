@@ -21,15 +21,10 @@ func main() {
 		log.Fatal().Err(err)
 	}
 
-	client, ctx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Fatal().Err(err)
-	}
-
 	for _,cards := range cardInfo.Cards{
 		fmt.Println(cards)
 		cards.Quantity = 1
-		if err = mongodb.InsertCard(cards, client, ctx); err != nil {
+		if err = mongodb.InsertCard(cards); err != nil {
 			log.Fatal().Err(err)
 		}
 		/*if err = mongodb.UpdateSingleCard(cards.Name, client, ctx); err != nil {
