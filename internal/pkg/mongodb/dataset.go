@@ -1,6 +1,6 @@
 package mongodb
 
-type DBCards struct {
+type DBCard struct {
 	ID			  string 		`bson:"_id,omitempty"`
 	Name          string         `bson:"name,omitempty"`
 	ManaCost      string         `bson:"manaCost,omitempty"`

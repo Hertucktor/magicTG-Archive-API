@@ -73,9 +73,10 @@ func AllCardInfo() (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(multiverseID string) ([]DBCards, error) {
-	var cardInfoFiltered []DBCards
-	filter := bson.M{"multiverseid": multiverseID}
+func SingleCardInfo(cardName string) (DBCard, error) {
+	var cardInfoFiltered []DBCard
+	var singleCard DBCard
+	filter := bson.M{"name": cardName}
 
 	client, ctx, err := CreateClient()
 	if err != nil {
@@ -93,15 +94,19 @@ func SingleCardInfo(multiverseID string) ([]DBCards, error) {
 	filterCursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Error().Err(err)
-		return cardInfoFiltered, err
+		return singleCard, err
 	}
 
 	if err = filterCursor.All(ctx, &cardInfoFiltered); err != nil {
 		log.Error().Err(err)
-		return cardInfoFiltered, err
+		return singleCard, err
 	}
 
-	return cardInfoFiltered, err
+	for _, card := range cardInfoFiltered {
+		singleCard = card
+	}
+
+	return singleCard, err
 }
 
 func DeleteSingleCard(cardName string) error {

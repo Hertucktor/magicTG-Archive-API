@@ -1,20 +1,30 @@
 package database
 
 import (
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertDataset(cardInfo importer.Card, multiverseID string) error {
+func InsertDataset(cardInfo importer.APIResponseForOneCard) error {
 
-	cards, err := mongodb.SingleCardInfo(multiverseID)
+	card, err := mongodb.SingleCardInfo(cardInfo.Card.Name)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
-	if cards != nil {
-		if err := mongodb.InsertCard(cardInfo); err != nil {
+
+	fmt.Println(card)
+	fmt.Println(cardInfo.Card.Name)
+
+	if card.ID != "" {
+		if err := mongodb.UpdateSingleCard(cardInfo.Card.Name, card.Quantity); err != nil {
+			log.Error().Err(err)
+			return err
+		}
+	} else {
+		if err := mongodb.InsertCard(cardInfo.Card); err != nil {
 			log.Error().Err(err)
 			return err
 		}
