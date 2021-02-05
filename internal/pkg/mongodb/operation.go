@@ -1,32 +1,44 @@
 package mongodb
 
 import (
-	"context"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/importer"
 )
 //FIXME: If insert of duplicates increase the quantity counter by +1
 func InsertCard(cardInfo importer.Cards) error {
+	/*var cardName string
+	var cardQuantity int*/
+
 	client, ctx, err := CreateClient()
 	if err != nil {
 		log.Fatal().Err(err)
 	}
+
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
 	}()
 
-	results, err := SingleCardInfo(cardInfo.Name)
+	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+
+	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
-	fmt.Println(results)
+	fmt.Println(insertResult.InsertedID)
+
+	/*results, err := SingleCardInfo(cardInfo.Name)
+	if err != nil {
+		log.Error().Err(err)
+		return err
+	}
+
+	//When there is no document with the given name, insert new document
 	if results == nil {
-		fmt.Printf("no document found with name: %v", cardInfo.Name)
+		//log.Info().Msgf("no document found with name: ", cardInfo.Name)
 
 		collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
@@ -35,17 +47,28 @@ func InsertCard(cardInfo importer.Cards) error {
 			log.Error().Err(err)
 			return err
 		}
-		fmt.Println("Inserted card with ID:", insertResult.InsertedID)
-
+		log.Info().Msgf("Inserted card with ID:", insertResult.InsertedID)
+	//When there is a document with the given name, update new document with card quantity +1
 	}else {
-		fmt.Printf("document found with name: %v", cardInfo.Name)
-		fmt.Println("Here update")
-	}
+		for _, card := range results{
+			cardName = card.Name
+			cardQuantity = card.Quantity
+		}
+		if err := UpdateSingleCard(cardName, cardQuantity); err != nil{
+			log.Error().Err(err)
+			return err
+		}
+
+	}*/
 
 	return err
 }
 
-func AllCardInfo(client *mongo.Client, ctx context.Context) error{
+func AllCardInfo() error{
+	client, ctx, err := CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -76,15 +99,16 @@ func AllCardInfo(client *mongo.Client, ctx context.Context) error{
 
 func SingleCardInfo(cardName string) ([]DBCards, error) {
 	var cardInfoFiltered []DBCards
+
 	client, ctx, err := CreateClient()
 	if err != nil {
 		log.Fatal().Err(err)
 	}
-	/*
+
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
-	}()*/
+	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
@@ -104,7 +128,12 @@ func SingleCardInfo(cardName string) ([]DBCards, error) {
 	return cardInfoFiltered, err
 }
 
-func DeleteSingleCard(cardName string, client *mongo.Client, ctx context.Context) error {
+func DeleteSingleCard(cardName string) error {
+	client, ctx, err := CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -122,24 +151,34 @@ func DeleteSingleCard(cardName string, client *mongo.Client, ctx context.Context
 	return nil
 }
 
-func UpdateSingleCard(cardName string, client *mongo.Client, ctx context.Context) error {
+func UpdateSingleCard(cardName string, cardQuantity int) error {
+	newQuantity := cardQuantity+1
+
+	client, ctx, err := CreateClient()
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
+	defer func() {
+		err := client.Disconnect(ctx)
+		log.Err(err)
+	}()
+
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
-	//quantity := findDocumentWithCardNameAndSafeQuantityToVariable
-
-	result, err := collection.UpdateOne(
+	_, err = collection.UpdateOne(
 		ctx,
 		bson.M{"name": cardName},
 		bson.D{
-		{"$set", bson.D{{"quantity", 2}}},
+		{"$set", bson.D{{"quantity", newQuantity}}},
 		},
 	)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
-	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
-
+	/*
+	log.Info().Msgf("Updated %v Documents!\n", result.ModifiedCount)*/
 
 	return nil
 }
