@@ -1,115 +1,95 @@
 package mongodb
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"magicTGArchive/internal/pkg/importer"
 )
-//FIXME: If insert of duplicates increase the quantity counter by +1
-func InsertCard(cardInfo importer.Card) error {
-	/*var cardName string*/
 
+func InsertCard(cardInfo importer.Card) error {
+	cardInfo.Quantity = 1
 
 	client, ctx, err := CreateClient()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return err
 	}
 
 	defer func() {
-		err := client.Disconnect(ctx)
-		log.Err(err)
+		if err := client.Disconnect(ctx); err != nil {
+			log.Err(err)
+		}
 	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
-	cardInfo.Quantity = 1
+
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
-	log.Info().Msgf("",insertResult.InsertedID)
 
-	/*results, err := SingleCardInfo(cardInfo.Name)
-	if err != nil {
-		log.Error().Err(err)
-		return err
-	}
-	//When there is no document with the given name, insert new document
-	if results == nil {
-		//log.Info().Msgf("no document found with name: ", cardInfo.Name)
-		collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
-		insertResult, err := collection.InsertOne(context.TODO(), cardInfo)
-		if err != nil {
-			log.Error().Err(err)
-			return err
-		}
-		log.Info().Msgf("Inserted card with ID:", insertResult.InsertedID)
-	//When there is a document with the given name, update new document with card quantity +1
-	}else {
-		for _, card := range results{
-			cardName = card.Name
-			cardQuantity = card.Quantity
-		}
-		if err := UpdateSingleCard(cardName, cardQuantity); err != nil{
-			log.Error().Err(err)
-			return err
-		}
-	}*/
+	log.Info().Msgf("",insertResult.InsertedID)
 
 	return err
 }
 
-func AllCardInfo() error{
+func AllCardInfo() (bson.M, error){
+	var cards bson.M
+
 	client, ctx, err := CreateClient()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return cards, err
 	}
+
 	defer func() {
-		err := client.Disconnect(ctx)
-		log.Err(err)
+		if err := client.Disconnect(ctx); err != nil {
+			log.Err(err)
+		}
 	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return cards, err
 	}
+
 	defer func() {
-		err := cursor.Close(ctx)
-		if err != nil {
+		if err := cursor.Close(ctx); err != nil {
 			log.Error().Err(err)
 		}
 	}()
+
 	for cursor.Next(ctx) {
-		var episode bson.M
-		if err = cursor.Decode(&episode); err != nil {
-			log.Fatal().Err(err)
+		if err = cursor.Decode(&cards); err != nil {
+			log.Error().Err(err)
+			return cards, err
 		}
-		fmt.Println(episode)
 	}
 
-	return err
+	return cards, err
 }
 
-func SingleCardInfo(cardName string) ([]DBCards, error) {
+func SingleCardInfo(multiverseID string) ([]DBCards, error) {
 	var cardInfoFiltered []DBCards
+	filter := bson.M{"multiverseid": multiverseID}
 
 	client, ctx, err := CreateClient()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	defer func() {
-		err := client.Disconnect(ctx)
-		log.Err(err)
+		if err := client.Disconnect(ctx); err != nil {
+			log.Err(err)
+		}
 	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
-
-	filter := bson.M{"name": cardName}
 	filterCursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Error().Err(err)
@@ -127,7 +107,8 @@ func SingleCardInfo(cardName string) ([]DBCards, error) {
 func DeleteSingleCard(cardName string) error {
 	client, ctx, err := CreateClient()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return err
 	}
 
 	defer func() {
@@ -142,9 +123,10 @@ func DeleteSingleCard(cardName string) error {
 		log.Error().Err(err)
 		return err
 	}
-	fmt.Printf("DeleteOne removed %v document(s)\n", result.DeletedCount)
 
-	return nil
+	log.Info().Msgf("Amount of Documents removed:\n", result.DeletedCount)
+
+	return err
 }
 
 func UpdateSingleCard(cardName string, cardQuantity int) error {
@@ -152,17 +134,19 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 
 	client, ctx, err := CreateClient()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return err
 	}
 
 	defer func() {
-		err := client.Disconnect(ctx)
-		log.Err(err)
+		if err := client.Disconnect(ctx); err != nil {
+			log.Err(err)
+		}
 	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
-	_, err = collection.UpdateOne(
+	result, err := collection.UpdateOne(
 		ctx,
 		bson.M{"name": cardName},
 		bson.D{
@@ -173,8 +157,8 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		log.Error().Err(err)
 		return err
 	}
-	/*
-		log.Info().Msgf("Updated %v Documents!\n", result.ModifiedCount)*/
 
-	return nil
+	log.Info().Msgf("Updated %v Documents!\n", result.ModifiedCount)
+
+	return err
 }
