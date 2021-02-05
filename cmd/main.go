@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
 	"magicTGArchive/internal/pkg/mongodb"
@@ -34,7 +33,9 @@ func main() {
 	URL = importer.URLForMultiverserID(multiverseID)
 
 	singleCard, err := importer.RequestOneCard(URL)
-	fmt.Println(singleCard)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 
 	if err = mongodb.InsertCard(singleCard.Card); err != nil {
 		log.Fatal().Err(err)

@@ -8,8 +8,8 @@ import (
 )
 //FIXME: If insert of duplicates increase the quantity counter by +1
 func InsertCard(cardInfo importer.Card) error {
-	/*var cardName string
-	var cardQuantity int*/
+	/*var cardName string*/
+
 
 	client, ctx, err := CreateClient()
 	if err != nil {
@@ -22,13 +22,13 @@ func InsertCard(cardInfo importer.Card) error {
 	}()
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
-
+	cardInfo.Quantity = 1
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
 		log.Error().Err(err)
 		return err
 	}
-	fmt.Println(insertResult.InsertedID)
+	log.Info().Msgf("",insertResult.InsertedID)
 
 	/*results, err := SingleCardInfo(cardInfo.Name)
 	if err != nil {
