@@ -10,11 +10,16 @@ import (
 )
 //FIXME: If insert of duplicates increase the quantity counter by +1
 func InsertCard(cardInfo importer.Cards, client *mongo.Client, ctx context.Context) error {
-
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
 	}()
+
+	_, err := SingleCardInfo(cardInfo.Name, client, ctx)
+	if err != nil {
+		log.Error().Err(err)
+		return err
+	}
 
 	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
 
@@ -57,7 +62,9 @@ func AllCardInfo(client *mongo.Client, ctx context.Context) error{
 	return err
 }
 
-func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) error {
+func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) ([]DBCards, error) {
+	var cardInfoFiltered []DBCards
+
 	defer func() {
 		err := client.Disconnect(ctx)
 		log.Err(err)
@@ -70,17 +77,15 @@ func SingleCardInfo(cardName string, client *mongo.Client, ctx context.Context) 
 	filterCursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Error().Err(err)
-		return err
+		return cardInfoFiltered, err
 	}
-	var cardInfoFiltered []bson.M
+
 	if err = filterCursor.All(ctx, &cardInfoFiltered); err != nil {
 		log.Error().Err(err)
-		return err
+		return cardInfoFiltered, err
 	}
 
-	fmt.Println(cardInfoFiltered)
-
-	return nil
+	return cardInfoFiltered, err
 }
 
 func DeleteSingleCard(cardName string, client *mongo.Client, ctx context.Context) error {
