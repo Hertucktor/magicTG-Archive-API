@@ -8,9 +8,14 @@ import (
 	"time"
 )
 
+var dbUser = "admin"
+var dbPass = "admin"
+var dbPort = "127.0.0.1:27017"
+var dbName = "Magic:The-Gathering-Archive"
+
 func CreateClient() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	//TODO: secure username and password
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://admin:admin@127.0.0.1:27017/Magic:The-Gathering-Archive"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+dbUser+":"+dbPass+"@"+dbPort+"/"+dbName))
 	if err != nil {
 		log.Error().Err(err)
 		return client,nil, nil, err

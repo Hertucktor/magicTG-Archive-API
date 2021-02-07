@@ -6,7 +6,6 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 
-var dbName = "Magic:The-Gathering-Archive"
 var dbCollection = "cards"
 
 func InsertCard(cardInfo importer.Card) error {
