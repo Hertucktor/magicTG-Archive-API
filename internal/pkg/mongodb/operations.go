@@ -11,7 +11,7 @@ var dbCollection = "cards"
 func InsertCard(cardInfo importer.Card) error {
 	cardInfo.Quantity = 1
 
-	client, ctx, err := CreateClient()
+	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return err
@@ -21,6 +21,7 @@ func InsertCard(cardInfo importer.Card) error {
 		if err := client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
+		cancelCtx()
 	}()
 
 	collection := client.Database(dbName).Collection(dbCollection)
@@ -41,7 +42,7 @@ func AllCardInfo() (bson.M, error){
 	var filter = bson.M{}
 	var cards bson.M
 
-	client, ctx, err := CreateClient()
+	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return cards, err
@@ -51,6 +52,7 @@ func AllCardInfo() (bson.M, error){
 		if err := client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
+		cancelCtx()
 	}()
 
 	collection := client.Database(dbName).Collection(dbCollection)
@@ -84,7 +86,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 	var singleCard DBCard
 	var filter = bson.M{"name": cardName}
 
-	client, ctx, err := CreateClient()
+	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 	}
@@ -93,6 +95,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 		if err := client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
+		cancelCtx()
 	}()
 
 	collection := client.Database(dbName).Collection(dbName)
@@ -126,7 +129,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 func DeleteSingleCard(cardName string) error {
 	var filter = bson.M{"name": cardName}
 
-	client, ctx, err := CreateClient()
+	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return err
@@ -136,6 +139,7 @@ func DeleteSingleCard(cardName string) error {
 		if err := client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
+		cancelCtx()
 	}()
 
 	collection := client.Database(dbName).Collection(dbCollection)
@@ -159,7 +163,7 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
 
-	client, ctx, err := CreateClient()
+	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating client\n")
 		return err
@@ -169,6 +173,7 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		if err := client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
+		cancelCtx()
 	}()
 
 	collection := client.Database(dbName).Collection(dbCollection)
