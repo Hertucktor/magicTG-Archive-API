@@ -21,7 +21,7 @@ func CreateClient() (*mongo.Client, context.Context, context.CancelFunc, error) 
 		return client,nil, nil, err
 	}
 
-	ctx, cancelFunc := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Error().Err(err)
