@@ -6,6 +6,9 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 
+var dbName = "Magic:The-Gathering-Archive"
+var dbCollection = "cards"
+
 func InsertCard(cardInfo importer.Card) error {
 	cardInfo.Quantity = 1
 
@@ -21,7 +24,7 @@ func InsertCard(cardInfo importer.Card) error {
 		}
 	}()
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
@@ -49,7 +52,7 @@ func AllCardInfo() (bson.M, error){
 		}
 	}()
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
@@ -89,7 +92,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 		}
 	}()
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+	collection := client.Database(dbName).Collection(dbName)
 
 	filterCursor, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -121,7 +124,7 @@ func DeleteSingleCard(cardName string) error {
 		log.Err(err)
 	}()
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	result, err := collection.DeleteOne(ctx, bson.M{"name": cardName})
 	if err != nil {
@@ -149,7 +152,7 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		}
 	}()
 
-	collection := client.Database("Magic:The-Gathering-Archive").Collection("cards")
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	result, err := collection.UpdateOne(
 		ctx,
