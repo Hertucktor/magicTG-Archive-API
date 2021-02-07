@@ -8,4 +8,5 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	go.mongodb.org/mongo-driver v1.4.5
+	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5 // indirect
 )
