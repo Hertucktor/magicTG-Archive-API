@@ -3,13 +3,15 @@
 ##Overview - What is this project about?
 
 ##How does it work (an abbreviation)
-Type in a Magic: The Gathering card name, the Golang backend makes an api request to the fan made mtg api (https://magicthegathering.io/).
+Type in a Magic: The Gathering card name and set name, the Golang backend makes an api request to the fan made mtg api (https://magicthegathering.io/).
 The information given by the API REST will be stored in a MongoDB.
 
 ##How to run the current project
-The project is currently in its cli stage wich means that all input needs to be done by cli
-go run cmd/main.go lang <en/de>
-Then you will be asked for the card name -> enter your card name of choice e voila your card is stored in the database
+The project is currently in its cli stage which means that all input needs to be done by cli:
+```
+go run cmd/main.go --lang <en/de>
+```
+Then you will be asked for the card name and set name -> enter both after each other e voila your card is stored in the database
 
 ##Things to come
 - An API to request information from the mongoDB making the card information available per http request in a tidy JSON format
