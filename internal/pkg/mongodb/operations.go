@@ -6,7 +6,7 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 
-var dbCollection = "cards"
+var dbCollection = "myCardCollection"
 
 func InsertCard(cardInfo importer.Card) error {
 	cardInfo.Quantity = 1
