@@ -117,7 +117,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 		cancelCtx()
 	}()
 
-	collection := client.Database(conf.DbName).Collection(dbName)
+	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
 
 	cursor, err := collection.Find(ctx, filter)
