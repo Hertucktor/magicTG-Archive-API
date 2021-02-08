@@ -6,10 +6,10 @@ import (
 )
 
 type Conf struct {
-	dbUser string
-	dbPass string
-	dbPort string
-	dbName string
+	DbUser string
+	DbPass string
+	DbPort string
+	DbName string
 }
 
 func ReceiveEnvVars() (Conf, error) {
@@ -22,10 +22,10 @@ func ReceiveEnvVars() (Conf, error) {
 	}
 
 	conf := Conf{
-		dbUser: viper.Get("DB_USER").(string),
-		dbPass: viper.Get("DB_PASS").(string),
-		dbPort: viper.Get("DB_PORT").(string),
-		dbName: viper.Get("DB_NAME").(string),
+		DbUser: viper.Get("DB_USER").(string),
+		DbPass: viper.Get("DB_PASS").(string),
+		DbPort: viper.Get("DB_PORT").(string),
+		DbName: viper.Get("DB_NAME").(string),
 	}
 
 	return conf, err

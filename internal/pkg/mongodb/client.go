@@ -5,17 +5,20 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"magicTGArchive/internal/pkg/env"
 	"time"
 )
 
-var dbUser = "admin"
-var dbPass = "admin"
-var dbPort = "127.0.0.1:27017"
 var dbName = "Magic:The-Gathering-Archive"
 
 func CreateClient() (*mongo.Client, context.Context, context.CancelFunc, error) {
-	//TODO: secure username and password
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+dbUser+":"+dbPass+"@"+dbPort+"/"+dbName))
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return nil, nil, nil, err
+	}
+
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DbUser+":"+conf.DbPass+"@"+conf.DbPort+"/"+conf.DbName))
 	if err != nil {
 		log.Error().Err(err)
 		return client,nil, nil, err
