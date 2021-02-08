@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-var dbName = "Magic:The-Gathering-Archive"
-
 func CreateClient() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
