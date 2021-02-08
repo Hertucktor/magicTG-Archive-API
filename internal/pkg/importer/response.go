@@ -84,3 +84,56 @@ type Card struct {
 	ID            string         `json:"id"`
 	Quantity	  int 			 `json:"quantity"`
 }
+
+//TODO: Will be the only response structs
+type MTGDevAPIResponse struct {
+	Cards []Cardss `json:"cards"`
+}
+type Rulingss struct {
+	Date string `json:"date"`
+	Text string `json:"text"`
+}
+type ForeignNamess struct {
+	Name         string      `json:"name"`
+	Text         string      `json:"text"`
+	Flavor       string `json:"flavor"`
+	ImageURL     string      `json:"imageUrl"`
+	Language     string      `json:"language"`
+	Multiverseid int         `json:"multiverseid"`
+}
+type Legalitiess struct {
+	Format   string `json:"format"`
+	Legality string `json:"legality"`
+}
+type Cardss struct {
+	Name          string         `json:"name"`
+	ManaCost      string         `json:"manaCost,omitempty"`
+	Cmc           float64        `json:"cmc"`
+	Colors        []string       `json:"colors"`
+	ColorIdentity []string       `json:"colorIdentity"`
+	Type          string         `json:"type"`
+	Supertypes    []string  `json:"supertypes"`
+	Types         []string       `json:"types"`
+	Subtypes      []string  `json:"subtypes"`
+	Rarity        string         `json:"rarity"`
+	Set           string         `json:"set"`
+	SetName       string         `json:"setName"`
+	Text          string         `json:"text,omitempty"`
+	Artist        string         `json:"artist"`
+	Number        string         `json:"number"`
+	Layout        string         `json:"layout"`
+	Multiverseid  int            `json:"multiverseid,omitempty"`
+	ImageURL      string         `json:"imageUrl,omitempty"`
+	Rulings       []Rulingss      `json:"rulings"`
+	ForeignNames  []ForeignNamess `json:"foreignNames"`
+	Printings     []string       `json:"printings"`
+	OriginalText  string         `json:"originalText,omitempty"`
+	OriginalType  string         `json:"originalType,omitempty"`
+	Legalities    []Legalitiess   `json:"legalities"`
+	ID            string         `json:"id"`
+	Flavor        string         `json:"flavor,omitempty"`
+	Power         string         `json:"power,omitempty"`
+	Toughness     string         `json:"toughness,omitempty"`
+	Variations    []string       `json:"variations,omitempty"`
+	Quantity	  int 			 `json:"quantity"`
+}
