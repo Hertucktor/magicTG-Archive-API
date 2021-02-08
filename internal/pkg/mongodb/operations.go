@@ -3,6 +3,7 @@ package mongodb
 import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"magicTGArchive/internal/pkg/env"
 	"magicTGArchive/internal/pkg/importer"
 )
 
@@ -10,6 +11,12 @@ var dbCollection = "myCardCollection"
 
 func InsertCard(cardInfo importer.Card) error {
 	cardInfo.Quantity = 1
+
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return err
+	}
 
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
@@ -24,12 +31,12 @@ func InsertCard(cardInfo importer.Card) error {
 		cancelCtx()
 	}()
 
-	collection := client.Database(dbName).Collection(dbCollection)
+	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, dbName)
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, conf.DbName)
 		return err
 	}
 
@@ -41,6 +48,12 @@ func InsertCard(cardInfo importer.Card) error {
 func AllCardInfo() (bson.M, error){
 	var filter = bson.M{}
 	var cards bson.M
+
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return nil, err
+	}
 
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
@@ -55,7 +68,7 @@ func AllCardInfo() (bson.M, error){
 		cancelCtx()
 	}()
 
-	collection := client.Database(dbName).Collection(dbCollection)
+	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
 	cursor, err := collection.Find(ctx, filter)
@@ -86,6 +99,12 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 	var singleCard DBCard
 	var filter = bson.M{"name": cardName}
 
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return singleCard, err
+	}
+
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
@@ -98,7 +117,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 		cancelCtx()
 	}()
 
-	collection := client.Database(dbName).Collection(dbName)
+	collection := client.Database(conf.DbName).Collection(dbName)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
 
 	cursor, err := collection.Find(ctx, filter)
@@ -129,6 +148,12 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 func DeleteSingleCard(cardName string) error {
 	var filter = bson.M{"name": cardName}
 
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return err
+	}
+
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
@@ -142,7 +167,7 @@ func DeleteSingleCard(cardName string) error {
 		cancelCtx()
 	}()
 
-	collection := client.Database(dbName).Collection(dbCollection)
+	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
 
 	deleteResult, err := collection.DeleteOne(ctx, filter)
@@ -163,6 +188,12 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
 
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return err
+	}
+
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating client\n")
@@ -176,12 +207,12 @@ func UpdateSingleCard(cardName string, cardQuantity int) error {
 		cancelCtx()
 	}()
 
-	collection := client.Database(dbName).Collection(dbCollection)
+	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
 
 	updateResult, err := collection.UpdateOne(ctx, updateFilter, updateSet)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: updating the quantity of a card in collection of db:\n", dbCollection, dbName)
+		log.Error().Timestamp().Err(err).Msgf("Error: updating the quantity of a card in collection of db:\n", dbCollection, conf.DbName)
 		return err
 	}
 
