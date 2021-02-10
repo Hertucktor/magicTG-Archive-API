@@ -7,9 +7,9 @@ import (
 	"magicTGArchive/internal/pkg/importer"
 )
 
-var dbCollection = "myCardCollection"
+//var dbCollection = "myCardCollection"
 
-func InsertCard(cardInfo importer.Card) error {
+func InsertCard(cardInfo importer.Card, dbCollection string) error {
 	cardInfo.Quantity = 1
 
 	conf, err := env.ReceiveEnvVars()
@@ -45,7 +45,7 @@ func InsertCard(cardInfo importer.Card) error {
 	return err
 }
 
-func AllCardInfo() (bson.M, error){
+func AllCardInfo(dbCollection string) (bson.M, error){
 	var filter = bson.M{}
 	var cards bson.M
 
@@ -94,7 +94,7 @@ func AllCardInfo() (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string) (DBCard, error) {
+func SingleCardInfo(cardName string,dbCollection string) (DBCard, error) {
 	var cardInfoFiltered []DBCard
 	var singleCard DBCard
 	var filter = bson.M{"name": cardName}
@@ -145,7 +145,7 @@ func SingleCardInfo(cardName string) (DBCard, error) {
 	return singleCard, err
 }
 
-func DeleteSingleCard(cardName string) error {
+func DeleteSingleCard(cardName string,dbCollection string) error {
 	var filter = bson.M{"name": cardName}
 
 	conf, err := env.ReceiveEnvVars()
@@ -181,7 +181,7 @@ func DeleteSingleCard(cardName string) error {
 	return err
 }
 
-func UpdateSingleCard(cardName string, cardQuantity int) error {
+func UpdateSingleCard(cardName string, cardQuantity int, dbCollection string) error {
 	var newQuantity = cardQuantity+1
 	var updateFilter = bson.M{"name": cardName}
 	var updateSet = bson.D{
