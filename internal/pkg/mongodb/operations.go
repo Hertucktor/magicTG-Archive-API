@@ -9,7 +9,7 @@ import (
 
 //var dbCollection = "myCardCollection"
 
-func InsertCard(cardInfo importer.Card, dbCollection string) error {
+func InsertCard(cardInfo importer.Cards, dbCollection string) error {
 	cardInfo.Quantity = 1
 
 	conf, err := env.ReceiveEnvVars()
@@ -94,7 +94,7 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string,dbCollection string) (DBCard, error) {
+func SingleCardInfo(cardName string, dbCollection string) (DBCard, error) {
 	var cardInfoFiltered []DBCard
 	var singleCard DBCard
 	var filter = bson.M{"name": cardName}
@@ -145,7 +145,7 @@ func SingleCardInfo(cardName string,dbCollection string) (DBCard, error) {
 	return singleCard, err
 }
 
-func DeleteSingleCard(cardName string,dbCollection string) error {
+func DeleteSingleCard(cardName string, dbCollection string) error {
 	var filter = bson.M{"name": cardName}
 
 	conf, err := env.ReceiveEnvVars()
