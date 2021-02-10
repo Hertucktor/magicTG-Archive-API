@@ -1,12 +1,7 @@
 package database
 
-import (
-	"github.com/rs/zerolog/log"
-	"magicTGArchive/internal/pkg/importer"
-	"magicTGArchive/internal/pkg/mongodb"
-)
-
-func InsertDataset(cardInfo importer.APIResponseForOneCard) error {
+//FIXME: For user input validation and quantity increasment CRUCIAL!
+/*func InsertDataset(cardInfo importer.APIResponseForMultipleCards) error {
 
 	card, err := mongodb.SingleCardInfo(cardInfo.Card.Name)
 	if err != nil {
@@ -15,7 +10,7 @@ func InsertDataset(cardInfo importer.APIResponseForOneCard) error {
 	}
 
 	if card.ID != "" {
-		if err := mongodb.UpdateSingleCard(cardInfo.Card.Name, card.Quantity); err != nil {
+		if err := mongodb.UpdateSingleCard(cardInfo.Cards, card.Quantity); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error updating the database")
 			return err
 		}
@@ -27,4 +22,4 @@ func InsertDataset(cardInfo importer.APIResponseForOneCard) error {
 	}
 
 	return err
-}
+}*/
