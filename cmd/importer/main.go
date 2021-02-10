@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/importer"
-	"magicTGArchive/internal/pkg/mongodb"
 	"strconv"
 )
 
@@ -20,7 +19,7 @@ func main() {
 		}
 
 		for _, card := range resp.Cards{
-			if err := mongodb.InsertCard(card, collectionName); err != nil {
+			if err := importer.InsertCard(card, collectionName); err != nil {
 				log.Fatal().Timestamp().Err(err).Msgf("Error: couldn't insert dataset:\n",card)
 			}
 		}
