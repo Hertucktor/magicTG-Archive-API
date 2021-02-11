@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"io/ioutil"
 	"net/http"
 	"github.com/gorilla/mux"
 )
@@ -39,15 +40,36 @@ func handleRequests(){
 	//Interface for UI
 	myRouter.HandleFunc("/", homePage)
 
-	myRouter.HandleFunc("/article/{id}", returnSingleCard)
+	//CRUD Operations
+	myRouter.HandleFunc("/article", createNewCardEntry).Methods(http.MethodPost)
+	myRouter.HandleFunc("/article/{id}", returnSingleCardEntry).Methods(http.MethodGet)
+	myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
+
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
 }
+func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
+	}
+	if _, err := fmt.Fprint(w, "%+v", string(reqBody)); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't serve string back on POST request")
+	}
+}
 
-func returnSingleCard(w http.ResponseWriter, r *http.Request){
-	log.Info().Msg("Endpoint Hit: returnSingleCard")
+func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
+	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
+
+	if err := json.NewEncoder(w).Encode(Articles); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with encoding struct to json")
+	}
+}
+
+func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
+	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
 	vars := mux.Vars(r)
 	key := vars["id"]
@@ -59,9 +81,4 @@ func returnSingleCard(w http.ResponseWriter, r *http.Request){
 			}
 		}
 	}
-
-	/*if err := json.NewEncoder(w).Encode(Articles); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with encoding struct to json")
-	}*/
-
 }
