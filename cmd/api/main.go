@@ -19,14 +19,18 @@ var Articles = []Article{
 	{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
 	{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
 }
+type ReqCard struct {
+	Name string `json:"name"`
+	SetName string `json:"setName"`
+}
 
 //var dbCollection = "myCardCollection"
-var dbCollection = "allCards"
+
 
 func main() {
 	handleRequests()
 }
-
+//TODO: serves UI
 func homePage(w http.ResponseWriter, r *http.Request){
 	if _, err := fmt.Fprintf(w, "Welcome to the HomePage!"); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't serve string on homepage")
@@ -43,8 +47,8 @@ func handleRequests(){
 	myRouter.HandleFunc("/", homePage)
 
 	//CRUD Operations
-	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", createNewCardEntry).Methods(http.MethodPost)
-	myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	myRouter.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
+	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
 	/*myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
 	myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
 	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
@@ -53,31 +57,24 @@ func handleRequests(){
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
 }
-
+//TODO: read out of allCards collection with reqBody params and then safes found card into collection myCards
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
-	//var singleCard mongodb.DBCard
-	vars := mux.Vars(r)
-	cardName := vars["cardName"]
-	setName := vars["setName"]
+	var card ReqCard
 
-	//_,_ = fmt.Fprint(w, cardName, setName)
-
-	singleCard, err := SingleCardInfo(cardName,setName,dbCollection)
-	if err != nil {
-		_,_ = fmt.Fprint(w, err)
-	}
-	_,_ = fmt.Fprint(w, singleCard)
-
-	/*reqBody, err := ioutil.ReadAll(r.Body)
+	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
-
-	if err = json.Unmarshal(reqBody, &article);err != nil {
+	if err = json.Unmarshal(reqBody, &card);err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
+	fmt.Fprint(w,card.SetName,card.Name)
 
+	//card, _ := SingleCardInfo(card.Name,card.SetName, "allCards")
+
+
+	/*
 	Articles = append(Articles, article)
 
 	if err = json.NewEncoder(w).Encode(Articles); err != nil {
@@ -85,7 +82,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	}*/
 
 }
-
+//TODO: Returns all cards from myCards collection
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
@@ -93,7 +90,7 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
 	}
 }
-
+//TODO: Returns one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
@@ -101,7 +98,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	cardName := vars["cardName"]
 	setName := vars["setName"]
 
-	card, _ := SingleCardInfo(cardName,setName,dbCollection)
+	card, _ := SingleCardInfo(cardName,setName,"allCards")
 	resp, _ := json.Marshal(card)
 	_,_ = w.Write(resp)
 	/*if err != nil {
@@ -110,7 +107,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	_,_ =fmt.Fprint(w,singleCard)*/
 
 }
-
+//TODO: updates one card from myCards collection
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: updateSingleCardEntry")
 	var updatedArticle Article
@@ -133,7 +130,7 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	}
 
 }
-
+//TODO: deletes one card from myCards collection
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
 	vars := mux.Vars(r)
