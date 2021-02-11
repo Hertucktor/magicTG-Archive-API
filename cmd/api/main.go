@@ -34,7 +34,7 @@ func homePage(w http.ResponseWriter, r *http.Request){
 
 func handleRequests(){
 	var port = "127.0.0.1:8080"
-	log.Info().Msgf("Starting API on port:\n", port)
+	log.Info().Msgf("Starting API on port:", port)
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 	//Interface for UI
@@ -51,20 +51,29 @@ func handleRequests(){
 	}
 }
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
+	var article Article
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
-	if _, err := fmt.Fprint(w, "%+v", string(reqBody)); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't serve string back on POST request")
+
+	if err = json.Unmarshal(reqBody, &article);err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
+
+	Articles = append(Articles, article)
+
+	if err = json.NewEncoder(w).Encode(Articles); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
+	}
+
 }
 
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
 	if err := json.NewEncoder(w).Encode(Articles); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with encoding struct to json")
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
 	}
 }
 
@@ -77,7 +86,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	for _, article := range Articles {
 		if article.Id == key {
 			if err := json.NewEncoder(w).Encode(article); err != nil {
-				log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with encoding struct to json")
+				log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
 			}
 		}
 	}
