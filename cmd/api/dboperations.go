@@ -8,14 +8,14 @@ import (
 )
 
 func SingleCardInfo(cardName string, setName string, dbCollection string) (mongodb.DBCard, error) {
-	var cardInfoFiltered []mongodb.DBCard
-	var singleCard mongodb.DBCard
+	var dbCards []mongodb.DBCard
+	var card mongodb.DBCard
 	var filter = bson.M{"name": cardName, "setname": setName}
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return singleCard, err
+		return card, err
 	}
 
 	client, ctx, cancelCtx, err := mongodb.CreateClient()
@@ -36,7 +36,7 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) (mongo
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: cursor couldn't be created\n")
-		return singleCard, err
+		return card, err
 	}
 
 	defer func() {
@@ -46,14 +46,12 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) (mongo
 		log.Info().Msg("Success: Closed cursor\n")
 	}()
 
-	if err = cursor.All(ctx, &cardInfoFiltered); err != nil {
+	if err = cursor.All(ctx, &dbCards); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
-		return singleCard, err
+		return card, err
 	}
-	log.Info().Timestamp().Msgf("", singleCard)
-	for _, card := range cardInfoFiltered {
-		singleCard = card
-	}
+	//FIXME: dbCards only holds one entry, there must be a better solution
+	card = dbCards[0]
 
-	return singleCard, err
+	return card, err
 }

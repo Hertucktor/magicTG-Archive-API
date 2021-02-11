@@ -43,7 +43,7 @@ func handleRequests(){
 	myRouter.HandleFunc("/", homePage)
 
 	//CRUD Operations
-	myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", createNewCardEntry).Methods(http.MethodPost)
+	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", createNewCardEntry).Methods(http.MethodPost)
 	myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
 	/*myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
 	myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
@@ -101,13 +101,14 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	cardName := vars["cardName"]
 	setName := vars["setName"]
 
-	singleCard, err := SingleCardInfo(cardName,setName,dbCollection)
-	if err != nil {
+	card, _ := SingleCardInfo(cardName,setName,dbCollection)
+	resp, _ := json.Marshal(card)
+	_,_ = w.Write(resp)
+	/*if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't receive single card info from db")
 	}
-	if _,err = fmt.Fprint(w, singleCard); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't write to http.ResponseWriter")
-	}
+	_,_ =fmt.Fprint(w,singleCard)*/
+
 }
 
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
