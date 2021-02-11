@@ -4,12 +4,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"magicTGArchive/internal/pkg/env"
-	"magicTGArchive/internal/pkg/importer"
 )
 
-//var dbCollection = "myCardCollection"
-
-func InsertCard(cardInfo importer.Cards, dbCollection string) error {
+/*func InsertCard(cardInfo importer.Cards, dbCollection string) error {
 	cardInfo.Quantity = 1
 
 	conf, err := env.ReceiveEnvVars()
@@ -43,7 +40,7 @@ func InsertCard(cardInfo importer.Cards, dbCollection string) error {
 	log.Info().Msgf("Success: insertion result:\n", insertResult)
 
 	return err
-}
+}*/
 
 func AllCardInfo(dbCollection string) (bson.M, error){
 	var filter = bson.M{}
@@ -94,11 +91,10 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string, dbCollection string) (DBCard, error) {
-	var cardInfoFiltered []DBCard
+func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCard, error) {
+	//var cardInfoFiltered []DBCard
 	var singleCard DBCard
-	var filter = bson.M{"name": cardName}
-
+	var filter = bson.M{"name": cardName, "setname":setName}
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
@@ -118,7 +114,7 @@ func SingleCardInfo(cardName string, dbCollection string) (DBCard, error) {
 	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
+	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -133,14 +129,14 @@ func SingleCardInfo(cardName string, dbCollection string) (DBCard, error) {
 		log.Info().Msg("Success: Closed cursor\n")
 	}()
 
-	if err = cursor.All(ctx, &cardInfoFiltered); err != nil {
+	if err = cursor.All(ctx, &singleCard); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
 		return singleCard, err
 	}
-
-	for _, card := range cardInfoFiltered {
+	log.Info().Timestamp().Msgf("", singleCard)
+	/*for _, card := range cardInfoFiltered {
 		singleCard = card
-	}
+	}*/
 
 	return singleCard, err
 }

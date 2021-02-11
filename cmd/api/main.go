@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
-	"github.com/gorilla/mux"
 )
 
 type Article struct {
@@ -19,9 +19,11 @@ var Articles = []Article{
 	{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
 	{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
 }
-func main() {
-	log.Info().Msg("Rest API v2.0 - Mux Routers")
 
+//var dbCollection = "myCardCollection"
+var dbCollection = "allCards"
+
+func main() {
 	handleRequests()
 }
 
@@ -41,20 +43,33 @@ func handleRequests(){
 	myRouter.HandleFunc("/", homePage)
 
 	//CRUD Operations
-	myRouter.HandleFunc("/article", createNewCardEntry).Methods(http.MethodPost)
-	myRouter.HandleFunc("/article/{id}", returnSingleCardEntry).Methods(http.MethodGet)
-	myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
+	myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", createNewCardEntry).Methods(http.MethodPost)
+	myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	/*myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
 	myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
-	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)
+	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
 }
+
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
-	var article Article
-	reqBody, err := ioutil.ReadAll(r.Body)
+	//var singleCard mongodb.DBCard
+	vars := mux.Vars(r)
+	cardName := vars["cardName"]
+	setName := vars["setName"]
+
+	//_,_ = fmt.Fprint(w, cardName, setName)
+
+	singleCard, err := SingleCardInfo(cardName,setName,dbCollection)
+	if err != nil {
+		_,_ = fmt.Fprint(w, err)
+	}
+	_,_ = fmt.Fprint(w, singleCard)
+
+	/*reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
@@ -67,7 +82,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 
 	if err = json.NewEncoder(w).Encode(Articles); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
-	}
+	}*/
 
 }
 
@@ -83,14 +98,15 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
 	vars := mux.Vars(r)
-	key := vars["id"]
+	cardName := vars["cardName"]
+	setName := vars["setName"]
 
-	for _, article := range Articles {
-		if article.Id == key {
-			if err := json.NewEncoder(w).Encode(article); err != nil {
-				log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
-			}
-		}
+	singleCard, err := SingleCardInfo(cardName,setName,dbCollection)
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't receive single card info from db")
+	}
+	if _,err = fmt.Fprint(w, singleCard); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't write to http.ResponseWriter")
 	}
 }
 
