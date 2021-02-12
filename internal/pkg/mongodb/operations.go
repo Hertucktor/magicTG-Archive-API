@@ -89,14 +89,15 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCard, error) {
-	var cardInfoFiltered []DBCard
-	var singleCard DBCard
-	var filter = bson.M{"name": cardName, "setname":setName}
+func SingleCardInfo(cardName string, dbCollection string) ([]bson.M, error) {
+	var databaseResponse []bson.M
+
+	var filter = bson.M{"name": cardName}
+
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return singleCard, err
+		return databaseResponse, err
 	}
 
 	client, ctx, cancelCtx, err := CreateClient()
@@ -105,7 +106,7 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCar
 	}
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
 		cancelCtx()
@@ -117,27 +118,22 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCar
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: cursor couldn't be created\n")
-		return singleCard, err
+		return databaseResponse, err
 	}
 
 	defer func() {
-		if err := cursor.Close(ctx); err != nil {
+		if err = cursor.Close(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor", cursor)
 		}
 		log.Info().Msg("Success: Closed cursor\n")
 	}()
 
-	if err = cursor.All(ctx, &cardInfoFiltered); err != nil {
+	if err = cursor.All(ctx, &databaseResponse); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
-		return singleCard, err
-	}
-	log.Info().Timestamp().Msgf("", singleCard)
-
-	for _, card := range cardInfoFiltered {
-		singleCard = card
+		return databaseResponse, err
 	}
 
-	return singleCard, err
+	return databaseResponse, err
 }
 
 func DeleteSingleCard(cardName string, dbCollection string) error {

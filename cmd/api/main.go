@@ -100,14 +100,20 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	singleCard, err := mongodb.SingleCardInfo(card.Name, card.SetName, "allCards")
+	results, err := mongodb.SingleCardInfo(card.Name, "allCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive card")
 	}
 
-	if err = mongodb.InsertCard(singleCard,"myCards"); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert card into db")
+	//_,_ = fmt.Fprint(w, results[0])
+	for key := range results{
+		fmt.Println(results[key]["artist"])
+
 	}
+
+	/*if err = mongodb.InsertCard(singleCard,"myCards"); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert card into db")
+	}*/
 }
 //TODO: Returns all cards from myCards collection
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
