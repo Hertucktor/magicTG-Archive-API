@@ -10,16 +10,6 @@ import (
 	"net/http"
 )
 
-type Article struct {
-	Id      string `json:"Id"`
-	Title   string `json:"Title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-}
-var Articles = []Article{
-	{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-	{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
-}
 type ReqCard struct {
 	Name string `json:"name"`
 	SetName string `json:"setName"`
@@ -89,39 +79,44 @@ func handleRequests(){
 //TODO: read out of allCards collection with reqBody params and then safes found card into collection myCards
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
-	var card ReqCard
-
+	var reqCard ReqCard
+	var card mongodb.DBCard
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
 
-	if err = json.Unmarshal(reqBody, &card);err != nil {
+	if err = json.Unmarshal(reqBody, &reqCard);err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	results, err := mongodb.SingleCardInfo(card.Name, "allCards")
+	results, err := mongodb.SingleCardInfo(reqCard.Name, reqCard.SetName, "allCards")
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive card")
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
 
-	//_,_ = fmt.Fprint(w, results[0])
-	for key := range results{
-		fmt.Println(results[key]["artist"])
-
+	response , err := json.Marshal(results[0])
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	if _,err = w.Write(response); err != nil {
+		log.Fatal().Err(err)
+	}
+	if err = json.Unmarshal(response,&card); err != nil {
+		log.Fatal().Err(err)
 	}
 
-	/*if err = mongodb.InsertCard(singleCard,"myCards"); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert card into db")
-	}*/
+	if err = mongodb.InsertCard(card,"myCards"); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
+	}
 }
 //TODO: Returns all cards from myCards collection
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
-	if err := json.NewEncoder(w).Encode(Articles); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
-	}
+	//if err := json.NewEncoder(w).Encode(Articles); err != nil {
+	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
+	//}
 }
 //TODO: Returns one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
@@ -143,35 +138,35 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 //TODO: updates one card from myCards collection
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: updateSingleCardEntry")
-	var updatedArticle Article
-	vars := mux.Vars(r)
-	id := vars["id"]
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
-	}
-	if err = json.Unmarshal(reqBody, &updatedArticle);err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
-	}
-
-	for _,article := range Articles {
-		if article.Id == id {
-			article.Content = updatedArticle.Content
-			article.Desc = updatedArticle.Desc
-			article.Title = updatedArticle.Title
-		}
-	}
+	//var updatedArticle Article
+	//vars := mux.Vars(r)
+	//id := vars["id"]
+	//reqBody, err := ioutil.ReadAll(r.Body)
+	//if err != nil {
+	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
+	//}
+	//if err = json.Unmarshal(reqBody, &updatedArticle);err != nil {
+	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
+	//}
+	//
+	//for _,article := range Articles {
+	//	if article.Id == id {
+	//		article.Content = updatedArticle.Content
+	//		article.Desc = updatedArticle.Desc
+	//		article.Title = updatedArticle.Title
+	//	}
+	//}
 
 }
 //TODO: deletes one card from myCards collection
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	for index, article := range Articles{
-		if article.Id == id {
-			Articles = append(Articles[:index], Articles[index+1:]...)
-		}
-	}
+	//vars := mux.Vars(r)
+	//id := vars["id"]
+	//
+	//for index, article := range Articles{
+	//	if article.Id == id {
+	//		Articles = append(Articles[:index], Articles[index+1:]...)
+	//	}
+	//}
 }

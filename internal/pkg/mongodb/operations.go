@@ -89,10 +89,10 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string, dbCollection string) ([]bson.M, error) {
+func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bson.M, error) {
 	var databaseResponse []bson.M
 
-	var filter = bson.M{"name": cardName}
+	var filter = bson.M{"name": cardName, "setname": setName}
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {

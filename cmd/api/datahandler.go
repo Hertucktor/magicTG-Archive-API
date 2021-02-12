@@ -1,7 +1,10 @@
 package main
 
-import "go.mongodb.org/mongo-driver/bson"
+/*func ParseBsonMArrayIntoStruct(m []bson.M) Card {
+	//var cards []Card
+	var card Card
+	artist := m[0]["artist"]
+	card.Artist = artist
 
-func ParseBsonMArrayIntoStruct(m []bson.M, s interface{})  {
-
-}
+	return card
+}*/
