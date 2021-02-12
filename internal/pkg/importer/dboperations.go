@@ -6,7 +6,7 @@ import (
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertCard(cardInfo Cards, dbCollection string) error {
+func InsertImportCard(cardInfo Cards, dbCollection string) error {
 	cardInfo.Quantity = 1
 
 	conf, err := env.ReceiveEnvVars()

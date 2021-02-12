@@ -19,7 +19,7 @@ func main() {
 		}
 
 		for _, card := range resp.Cards{
-			if err := importer.InsertCard(card, collectionName); err != nil {
+			if err := importer.InsertImportCard(card, collectionName); err != nil {
 				log.Fatal().Timestamp().Err(err).Msgf("Error: couldn't insert dataset:\n",card)
 			}
 		}

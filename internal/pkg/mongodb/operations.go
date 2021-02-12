@@ -4,11 +4,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/importer"
 )
 
-/*func InsertCard(cardInfo importer.Cards, dbCollection string) error {
-	cardInfo.Quantity = 1
-
+func InsertCard(cardInfo importer.Cards, dbCollection string) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
@@ -22,7 +21,7 @@ import (
 	}
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
 		cancelCtx()
@@ -40,7 +39,7 @@ import (
 	log.Info().Msgf("Success: insertion result:\n", insertResult)
 
 	return err
-}*/
+}
 
 func AllCardInfo(dbCollection string) (bson.M, error){
 	var filter = bson.M{}
@@ -92,7 +91,7 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 }
 
 func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCard, error) {
-	//var cardInfoFiltered []DBCard
+	var cardInfoFiltered []DBCard
 	var singleCard DBCard
 	var filter = bson.M{"name": cardName, "setname":setName}
 	conf, err := env.ReceiveEnvVars()
@@ -129,14 +128,15 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) (DBCar
 		log.Info().Msg("Success: Closed cursor\n")
 	}()
 
-	if err = cursor.All(ctx, &singleCard); err != nil {
+	if err = cursor.All(ctx, &cardInfoFiltered); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
 		return singleCard, err
 	}
 	log.Info().Timestamp().Msgf("", singleCard)
-	/*for _, card := range cardInfoFiltered {
+
+	for _, card := range cardInfoFiltered {
 		singleCard = card
-	}*/
+	}
 
 	return singleCard, err
 }

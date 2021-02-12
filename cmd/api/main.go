@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"magicTGArchive/internal/pkg/mongodb"
 	"net/http"
 )
 
@@ -69,9 +70,10 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	if err = json.Unmarshal(reqBody, &card);err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
-	fmt.Fprint(w,card.SetName,card.Name)
 
-	//card, _ := SingleCardInfo(card.Name,card.SetName, "allCards")
+	_, err = mongodb.SingleCardInfo(card.Name, card.SetName, "allCards")
+
+
 
 
 	/*
@@ -92,7 +94,7 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 }
 //TODO: Returns one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
-	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
+	/*log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
@@ -100,7 +102,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 
 	card, _ := SingleCardInfo(cardName,setName,"allCards")
 	resp, _ := json.Marshal(card)
-	_,_ = w.Write(resp)
+	_,_ = w.Write(resp)*/
 	/*if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't receive single card info from db")
 	}
