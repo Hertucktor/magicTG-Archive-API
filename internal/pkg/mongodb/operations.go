@@ -40,9 +40,10 @@ func InsertCard(cardInfo DBCard, dbCollection string) error {
 	return err
 }
 
-func AllCardInfo(dbCollection string) (bson.M, error){
+func AllCardInfo(dbCollection string) ([]bson.M, error){
 	var filter = bson.M{}
-	var cards bson.M
+	var card bson.M
+	var cards []bson.M
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -57,7 +58,7 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	}
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
 		cancelCtx()
@@ -73,17 +74,19 @@ func AllCardInfo(dbCollection string) (bson.M, error){
 	}
 
 	defer func() {
-		if err := cursor.Close(ctx); err != nil {
+		if err = cursor.Close(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:\n", cursor)
 		}
-		log.Info().Msgf("Closed cursor:", cursor)
+		log.Info().Msg("Closed cursor:")
 	}()
 
 	for cursor.Next(ctx) {
-		if err = cursor.Decode(&cards); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n", cards)
+
+		if err = cursor.Decode(&card); err != nil {
+			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
 			return cards, err
 		}
+		cards = append(cards, card)
 	}
 
 	return cards, err

@@ -67,8 +67,8 @@ func handleRequests(){
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
-	/*myRouter.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
-	myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
+	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
+	/*myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
 	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
@@ -76,7 +76,6 @@ func handleRequests(){
 	}
 }
 
-//TODO: read out of allCards collection with reqBody params and then safes found card into collection myCards
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
 	var reqCard ReqCard
@@ -110,13 +109,18 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
 	}
 }
-//TODO: Returns all cards from myCards collection
+//FIXME: paginate results or db will struggle over time
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
-	//if err := json.NewEncoder(w).Encode(Articles); err != nil {
-	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
-	//}
+	results, err := mongodb.AllCardInfo("myCards")
+	response , err := json.Marshal(results)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	if _,err = w.Write(response); err != nil {
+		log.Fatal().Err(err)
+	}
 }
 //TODO: Returns one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){

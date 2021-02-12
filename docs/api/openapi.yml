@@ -45,6 +45,148 @@ paths:
         404:
           description: Resource was not found
           # empty body
+  /api/cards:
+    parameters:
+      - in: path
+        name: cardName
+        schema:
+          type: string
+        required: true
+        description: Name of a mtg card
+      - in: path
+        name: setName
+        schema:
+          type: string
+        required: true
+       description: Name of a mtg card set
+      get:
+        operationId: returnAllCardEntries
+        description: get all cards out of user collection
+        tags: ["magicTGArchive"]
+        responses:
+          200:
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example : "e78dc75a-d726-5a54-99ab-627545c531a5"
+                    artist:
+                      type: string
+                      example: "Chris Rahn"
+                    cmc:
+                      type: integer
+                      example: 4
+                    colorIdentity:
+                      type: array
+                      items:
+                        type: string
+                        example: "W"
+                    color:
+                      type: array
+                      items:
+                        type: string
+                        example: "White"
+                    flavor:
+                      type: string
+                      example: "\"This is about more than aether or inventions. Tezzeret's schemes must be stopped!\"\n—Ajani Goldmane"
+                    foreignName:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          flavor:
+                            type: string
+                            example: "„Hier geht es um mehr als Äther und Erfindungen. Tezzerets Plänen muss Einhalt geboten werden!\" —Ajani Goldmähne"
+                          imageUrl:
+                            type: string
+                            example: "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=425723&type=card"
+                          multiverseid:
+                            type: integer
+                            example: 425723
+                          name:
+                            type: string
+                            example: "Anspornendes Gebrüll"
+                          text:
+                            type: string
+                            example: "Lege auf jede Kreatur, die du kontrollierst, eine +1/+1-Marke."
+                    imageUrl:
+                      type: string
+                      example: "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=425693&type=card"
+                    layout:
+                      type: string
+                      example: "normal"
+                    legalities:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          format:
+                            type: string
+                            example: "Commander"
+                          legality:
+                            type: string
+                            example: "Legal"
+                    manaCost:
+                      type: string
+                      example: "{3}{W}"
+                    multiverseid:
+                      type: integer
+                      example: 425693
+                    name:
+                      type: string
+                      example: "Inspiring Roar"
+                    number:
+                      type: string
+                      example: "186"
+                    originalText:
+                      type: string
+                      example: "Put a +1/+1 counter on each creature you control."
+                    originalType:
+                      type: string
+                      example: "Sorcery"
+                    printings:
+                      type: array
+                      items:
+                        type: string
+                        example: "AER","CMR"
+                    quantity:
+                      type: integer
+                      example: 1
+                    rarity:
+                      type: string
+                      example: "Common"
+                    rulings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          data:
+                            type: string
+                            example: "2004-10-04"
+                          text:
+                            type: string
+                            example: "This replacement effect replaces the draw, so nothing that triggers on a draw will trigger."
+                    set:
+                      type: string
+                      example: "AER"
+                    setName:
+                      type: string
+                      example: "Aether Revolt"
+                    text:
+                      type: string
+                      example: "Put a +1/+1 counter on each creature you control."
+                    type:
+                      type: string
+                      example: "Sorcery"
+                    types:
+                      type: array
+                      items:
+                        type: string
+                        example: "Sorcery"
 
 #  /api/card/name/{cardName}/set/name/{setName}:
 #    parameters:
