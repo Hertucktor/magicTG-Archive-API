@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"magicTGArchive/internal/pkg/env"
@@ -135,6 +136,8 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bso
 		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
 		return databaseResponse, err
 	}
+
+	fmt.Println(databaseResponse)
 
 	return databaseResponse, err
 }

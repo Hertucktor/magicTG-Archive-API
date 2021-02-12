@@ -66,7 +66,7 @@ func handleRequests(){
 	//CRUD Operations
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
-	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
 	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
 	/*myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
 	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
@@ -124,15 +124,28 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 }
 //TODO: Returns one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
-	/*log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
+	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
 	setName := vars["setName"]
+	setName = "Aether Revolt"
+	cardName = "Inspiring Roar"
 
-	card, _ := SingleCardInfo(cardName,setName,"allCards")
-	resp, _ := json.Marshal(card)
-	_,_ = w.Write(resp)*/
+	results, err := mongodb.SingleCardInfo(cardName, setName, "myCards")
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
+	}
+
+	fmt.Println(results)
+
+	response , err := json.Marshal(results)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	if _,err = w.Write(response); err != nil {
+		log.Fatal().Err(err)
+	}
 	/*if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't receive single card info from db")
 	}
