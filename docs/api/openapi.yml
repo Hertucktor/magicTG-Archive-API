@@ -1,0 +1,183 @@
+openapi: "3.0.3"
+info:
+  description: "Magic: The Gathering card archiv"
+  version: "1.0.0"
+  title: "magicTGArchive-Api"
+  contact:
+    name:   "Vincent Poneleit | Hertucktor"
+    url:    "https://github.com/Hertucktor"
+tags:
+  - name: "magicTGArchive"
+    description: "Archive for Magic: The Gathering cards"
+    externalDocs:
+      description: "Find out more"
+      url: "https://github.com/Hertucktor/magicTGArchive"
+paths:
+  /api/card:
+    post:
+      operationId: createNewCardEntry
+      description: create new card entry in users own db collection
+      tags: ["magicTGArchive"]
+      requestBody:
+        description: card object you want to create
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: #cappingLimit, cappingStartAmount, maxOrderRevenue
+                  type: string
+                  example: "Abundance"
+                setname:
+                  type: string
+                  format: "Tenth Edition"
+      responses:
+        200:
+          description: OK
+          # empty body
+        401:
+          description: Unauthorized
+          # empty body
+        403:
+          description: Forbidden
+          # empty body
+        404:
+          description: Resource was not found
+          # empty body
+
+#  /api/card/name/{cardName}/set/name/{setName}:
+#    parameters:
+#      - in: path
+#        name: cardName
+#        schema:
+#          type: string
+#        required: true
+#        description: Name of a mtg card
+#      - in: path
+#        name: setName
+#        schema:
+#          type: string
+#        required: true
+#        description: Name of a mtg card set
+#    get:
+#      operationId: returnSingleCardEntry
+#      description: get one card out of user collection
+#      tags: ["magicTGArchive"]
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                properties:
+#                  shopId:
+#                    type: integer
+#                    example: 1140
+#                  categoryCappings:
+#                    type: array
+#                    items:
+#                      type: object
+#                      properties:
+#                        triggerPrice:
+#                          type: string
+#                          description: "price where capping starts"
+#                          example: "30.00"
+#                        startDate:
+#                          type: string
+#                          format: RFC3339-Datetime
+#                        endDate:
+#                          type: string
+#                          format: RFC3339-Datetime
+#                        enabled:
+#                          type: boolean
+#                        categoryId:
+#                          type: integer
+#                          description: "categoryId for which the capping is configured"
+#                        excludedCategoryIds:
+#                          type: array
+#                          description: "(sub)-categoryIds which are excluded from the capping"
+#                          items:
+#                            type: integer
+#                      required:
+#                        - triggerPrice
+#                        - startDate
+#                        - endDate
+#                        - categoryId
+#                        - excludedCategories
+#        404:
+#          description: Resource was not found
+#          #empty body
+#  /api/capping/shops/expired-include/{shopId}:
+#    parameters:
+#      - in: path
+#        name: shopId
+#        schema:
+#          type: integer
+#        required: true
+#        description: Numeric ID of the shop which capping object you want
+#    get:
+#      operationId: getCappingInfo
+#      description: get Info of Capping Object with ShopId
+#      tags: ["DK-Capping"]
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                properties:
+#                  shopId:
+#                    type: integer
+#                    example: 1140
+#                  categoryCappings:
+#                    type: array
+#                    items:
+#                      type: object
+#                      properties:
+#                        startDate:
+#                          type: string
+#                          format: RFC3339-Datetime
+#                        endDate:
+#                          type: string
+#                          format: RFC3339-Datetime
+#                        categoryId:
+#                          type: integer
+#                          description: "categoryId for which the capping is configured"
+#                        triggerPrice:
+#                          type: string
+#                          description: "price where capping starts"
+#                          example: "30.00"
+#                        enabled:
+#                          type: boolean
+#                        excludedCategoryIds:
+#                          type: array
+#                          description: "(sub)-categoryIds which are excluded from the capping"
+#                          items:
+#                            type: integer
+#                      required:
+#                        - startDate
+#                        - endDate
+#                        - categoryId
+#                        - triggerPrice
+#                        - enabled
+#                        - excludedCategories
+#        400:
+#          description: Bad Request
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: shopId needs to be an integer
+#        404:
+#          description: Not Found
+#          #empty body
+#        500:
+#          description: Internal Server Error
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: Something bad happened. Please contact the administrator.

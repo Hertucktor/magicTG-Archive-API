@@ -25,11 +25,32 @@ type ReqCard struct {
 	SetName string `json:"setName"`
 }
 
-//var dbCollection = "myCardCollection"
-
-
 func main() {
 	handleRequests()
+}
+
+func statusAlive(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("\"OK\""))
+}
+func statusCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	body := struct {
+		ResponseCode       int    `json:"-"`
+	}{
+		ResponseCode:       http.StatusOK,
+	}
+
+	marshalledObject, err := json.Marshal(body)
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Could not marshal body")
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("something bad happened, please contact the administrator"))
+		return
+	}
+
+	w.WriteHeader(body.ResponseCode)
+	_, _ = w.Write(marshalledObject)
 }
 //TODO: serves UI
 func homePage(w http.ResponseWriter, r *http.Request){
@@ -44,13 +65,19 @@ func handleRequests(){
 	log.Info().Msgf("Starting API on port:", port)
 
 	myRouter := mux.NewRouter().StrictSlash(true)
+
+	status := myRouter.PathPrefix("/status").Subrouter()
+	status.HandleFunc("/alive",statusAlive).Methods(http.MethodGet)
+	status.HandleFunc("/check",statusCheck).Methods(http.MethodGet)
 	//Interface for UI
-	myRouter.HandleFunc("/", homePage)
+	ui := myRouter.PathPrefix("/").Subrouter()
+	ui.HandleFunc("/", homePage)
 
 	//CRUD Operations
-	myRouter.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
+	api := myRouter.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	//myRouter.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
-	/*myRouter.HandleFunc("/articles", returnAllCardEntries).Methods(http.MethodGet)
+	/*myRouter.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
 	myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
 	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
 
@@ -58,6 +85,7 @@ func handleRequests(){
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
 }
+
 //TODO: read out of allCards collection with reqBody params and then safes found card into collection myCards
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
@@ -67,22 +95,19 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
+
 	if err = json.Unmarshal(reqBody, &card);err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	_, err = mongodb.SingleCardInfo(card.Name, card.SetName, "allCards")
+	singleCard, err := mongodb.SingleCardInfo(card.Name, card.SetName, "allCards")
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive card")
+	}
 
-
-
-
-	/*
-	Articles = append(Articles, article)
-
-	if err = json.NewEncoder(w).Encode(Articles); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with writing json encoded struct http.ResponseWriter")
-	}*/
-
+	if err = mongodb.InsertCard(singleCard,"myCards"); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert card into db")
+	}
 }
 //TODO: Returns all cards from myCards collection
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {

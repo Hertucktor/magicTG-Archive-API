@@ -4,10 +4,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"magicTGArchive/internal/pkg/env"
-	"magicTGArchive/internal/pkg/importer"
 )
 
-func InsertCard(cardInfo importer.Cards, dbCollection string) error {
+func InsertCard(cardInfo DBCard, dbCollection string) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
