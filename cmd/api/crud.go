@@ -11,8 +11,8 @@ import (
 )
 
 type ReqCard struct {
-	Name string
-	number string
+	Number string
+	SetName string
 }
 
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	results, err := mongodb.SingleCardInfo(reqCard.Name, reqCard.number, "allCards")
+	results, err := mongodb.SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -70,10 +70,11 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
 	vars := mux.Vars(r)
-	cardName := vars["cardName"]
+	setName := vars["setName"]
 	number := vars["number"]
 
-	results, err := mongodb.SingleCardInfo(cardName, number, "myCards")
+
+	results, err := mongodb.SingleCardInfo(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -94,10 +95,10 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	var card mongodb.DBCard
 
 	vars := mux.Vars(r)
-	cardName := vars["cardName"]
+	setName := vars["setName"]
 	number := vars["number"]
 
-	results, err := mongodb.SingleCardInfo(cardName, number, "myCards")
+	results, err := mongodb.SingleCardInfo(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -115,7 +116,7 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		log.Fatal().Err(err)
 	}
 
-	if err = mongodb.UpdateSingleCard(cardName,number,card.Quantity,"myCards"); err != nil {
+	if err = mongodb.UpdateSingleCard(setName, number, card.Quantity,"myCards"); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
 	}
 
@@ -124,10 +125,10 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
 	vars := mux.Vars(r)
-	cardName := vars["cardName"]
+	setName := vars["setName"]
 	number := vars["number"]
 
-	result, err := mongodb.DeleteSingleCard(cardName, number, "myCards")
+	result, err := mongodb.DeleteSingleCard(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Err(err)
 	}
