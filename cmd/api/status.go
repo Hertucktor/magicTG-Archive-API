@@ -8,8 +8,11 @@ import (
 
 func statusAlive(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("\"OK\""))
+	if _, err := w.Write([]byte("\"OK\"")); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't write status alive message back to user")
+	}
 }
+
 func statusCheck(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	body := struct {
@@ -22,10 +25,14 @@ func statusCheck(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Could not marshal body")
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte("something bad happened, please contact the administrator"))
+		if _, err = w.Write([]byte("something bad happened, please contact the administrator")); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't write error message back to user")
+		}
 		return
 	}
 
 	w.WriteHeader(body.ResponseCode)
-	_, _ = w.Write(marshalledObject)
+	if _, err = w.Write(marshalledObject); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't write info response back to user")
+	}
 }
