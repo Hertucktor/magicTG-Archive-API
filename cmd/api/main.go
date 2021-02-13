@@ -66,9 +66,9 @@ func handleRequests(){
 	//CRUD Operations
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
-	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
 	api.HandleFunc("/card/all", returnAllCardEntries).Methods(http.MethodGet)
-	//api.HandleFunc("/card/name/{cardName}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
+	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
 	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
@@ -126,7 +126,7 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Err(err)
 	}
 }
-//TODO: Returns one card from myCards collection
+//FIXME: Return only one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
@@ -139,33 +139,49 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
 
-	fmt.Println(results)
-
 	response , err := json.Marshal(results)
 	if err != nil {
 		log.Fatal().Err(err)
 	}
+
 	if _,err = w.Write(response); err != nil {
 		log.Fatal().Err(err)
 	}
-	/*if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: Couldn't receive single card info from db")
-	}
-	_,_ =fmt.Fprint(w,singleCard)*/
 
 }
-//TODO: updates one card from myCards collection
+
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: updateSingleCardEntry")
+	var card mongodb.DBCard
+
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
 	setName := vars["setName"]
-	fmt.Println(cardName)
-	fmt.Println(setName)
 
+	results, err := mongodb.SingleCardInfo(cardName, setName, "myCards")
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
+	}
+
+	response , err := json.Marshal(results[0])
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+
+	if _,err = w.Write(response); err != nil {
+		log.Fatal().Err(err)
+	}
+
+	if err = json.Unmarshal(response, &card); err != nil {
+		log.Fatal().Err(err)
+	}
+
+	if err = mongodb.UpdateSingleCard(cardName,setName,card.Quantity,"myCards"); err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
+	}
 
 }
-//TODO: deletes one card from myCards collection
+
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
 	vars := mux.Vars(r)

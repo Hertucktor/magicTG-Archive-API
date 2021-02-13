@@ -175,9 +175,9 @@ func DeleteSingleCard(cardName string, setName string, dbCollection string) (*mo
 	return deleteResult, err
 }
 
-func UpdateSingleCard(cardName string, cardQuantity int, dbCollection string) error {
+func UpdateSingleCard(cardName string, setName string, cardQuantity int, dbCollection string) error {
 	var newQuantity = cardQuantity+1
-	var updateFilter = bson.M{"name": cardName}
+	var updateFilter = bson.M{"name": cardName, "setname":setName}
 	var updateSet = bson.D{
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
@@ -195,7 +195,7 @@ func UpdateSingleCard(cardName string, cardQuantity int, dbCollection string) er
 	}
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
 		cancelCtx()
