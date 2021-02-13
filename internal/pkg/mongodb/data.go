@@ -13,7 +13,7 @@ type DBCard struct {
 	Subtypes      []string       `json:"subtypes,omitempty" bson:"subtypes,omitempty"`
 	Rarity        string         `json:"rarity,omitempty" bson:"rarity,omitempty"`
 	Set           string         `json:"set,omitempty" bson:"set,omitempty"`
-	SetName       string         `json:"setName,omitempty" bson:"setName,omitempty"`
+	SetName       string         `json:"setname,omitempty" bson:"setname,omitempty"`
 	Text          string         `json:"text,omitempty" bson:"text,omitempty"`
 	Flavor        string         `json:"flavor,omitempty" bson:"flavor,omitempty"`
 	Artist        string         `json:"artist,omitempty" bson:"artist,omitempty"`

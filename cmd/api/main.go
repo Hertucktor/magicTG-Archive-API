@@ -11,8 +11,8 @@ import (
 )
 
 type ReqCard struct {
-	Name string `json:"name"`
-	SetName string `json:"setName"`
+	Name string
+	SetName string
 }
 
 func main() {
@@ -67,9 +67,9 @@ func handleRequests(){
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
-	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
-	/*myRouter.HandleFunc("/article/{id}", updateSingleCardEntry).Methods(http.MethodPut)
-	myRouter.HandleFunc("/article/{id}", deleteSingleCardEntry).Methods(http.MethodDelete)*/
+	api.HandleFunc("/card/all", returnAllCardEntries).Methods(http.MethodGet)
+	//api.HandleFunc("/card/name/{cardName}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
+	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
@@ -80,6 +80,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
 	var reqCard ReqCard
 	var card mongodb.DBCard
+
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
@@ -93,15 +94,18 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
+	fmt.Println(results)
 
 	response , err := json.Marshal(results[0])
 	if err != nil {
 		log.Fatal().Err(err)
 	}
+
 	if _,err = w.Write(response); err != nil {
 		log.Fatal().Err(err)
 	}
-	if err = json.Unmarshal(response,&card); err != nil {
+
+	if err = json.Unmarshal(response, &card); err != nil {
 		log.Fatal().Err(err)
 	}
 
@@ -129,8 +133,6 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
 	setName := vars["setName"]
-	setName = "Aether Revolt"
-	cardName = "Inspiring Roar"
 
 	results, err := mongodb.SingleCardInfo(cardName, setName, "myCards")
 	if err != nil {
@@ -155,35 +157,24 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 //TODO: updates one card from myCards collection
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: updateSingleCardEntry")
-	//var updatedArticle Article
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	//reqBody, err := ioutil.ReadAll(r.Body)
-	//if err != nil {
-	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
-	//}
-	//if err = json.Unmarshal(reqBody, &updatedArticle);err != nil {
-	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
-	//}
-	//
-	//for _,article := range Articles {
-	//	if article.Id == id {
-	//		article.Content = updatedArticle.Content
-	//		article.Desc = updatedArticle.Desc
-	//		article.Title = updatedArticle.Title
-	//	}
-	//}
+	vars := mux.Vars(r)
+	cardName := vars["cardName"]
+	setName := vars["setName"]
+	fmt.Println(cardName)
+	fmt.Println(setName)
+
 
 }
 //TODO: deletes one card from myCards collection
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	//
-	//for index, article := range Articles{
-	//	if article.Id == id {
-	//		Articles = append(Articles[:index], Articles[index+1:]...)
-	//	}
-	//}
+	vars := mux.Vars(r)
+	cardName := vars["cardName"]
+	setName := vars["setName"]
+
+	result, err := mongodb.DeleteSingleCard(cardName, setName, "myCards")
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	_,_ = fmt.Fprint(w, result)
 }

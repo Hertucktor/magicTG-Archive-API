@@ -45,7 +45,7 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/cards:
+  /api/card/all:
     parameters:
       - in: path
         name: cardName
@@ -187,6 +187,15 @@ paths:
                       items:
                         type: string
                         example: "Sorcery"
+          401:
+            description: Unauthorized
+            # empty body
+          403:
+            description: Forbidden
+            # empty body
+          404:
+            description: Resource was not found
+            # empty body
 
 #  /api/card/name/{cardName}/set/name/{setName}:
 #    parameters:

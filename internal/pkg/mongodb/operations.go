@@ -1,9 +1,9 @@
 package mongodb
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/env"
 )
 
@@ -95,8 +95,7 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 
 func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bson.M, error) {
 	var databaseResponse []bson.M
-
-	var filter = bson.M{"name": cardName, "setname": setName}
+	var readFilter = bson.M{"name": cardName, "setname": setName}
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -106,7 +105,7 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bso
 
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
 	}
 
 	defer func() {
@@ -119,7 +118,7 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bso
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
 
-	cursor, err := collection.Find(ctx, filter)
+	cursor, err := collection.Find(ctx, readFilter)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: cursor couldn't be created\n")
 		return databaseResponse, err
@@ -137,28 +136,26 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bso
 		return databaseResponse, err
 	}
 
-	fmt.Println(databaseResponse)
-
 	return databaseResponse, err
 }
 
-func DeleteSingleCard(cardName string, dbCollection string) error {
-	var filter = bson.M{"name": cardName}
-
+func DeleteSingleCard(cardName string, setName string, dbCollection string) (*mongo.DeleteResult, error) {
+	var deleteResult *mongo.DeleteResult
+	var deleteFilter = bson.M{"name": cardName, "setname": setName}
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
+		return deleteResult, err
 	}
 
 	client, ctx, cancelCtx, err := CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return err
+		return deleteResult, err
 	}
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
 		}
 		cancelCtx()
@@ -167,15 +164,15 @@ func DeleteSingleCard(cardName string, dbCollection string) error {
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
 
-	deleteResult, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't delete document with given filter\n",filter)
-		return err
-	}
 
+	deleteResult, err = collection.DeleteOne(ctx, deleteFilter)
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't delete document with given deleteFilter\n")
+		return deleteResult, err
+	}
 	log.Info().Timestamp().Msgf("Success: Result after successful deletion:\n", deleteResult)
 
-	return err
+	return deleteResult, err
 }
 
 func UpdateSingleCard(cardName string, cardQuantity int, dbCollection string) error {
