@@ -26,9 +26,9 @@ paths:
             schema:
               type: object
               properties:
-                name: #cappingLimit, cappingStartAmount, maxOrderRevenue
+                number:
                   type: string
-                  example: "Abundance"
+                  example: "249"
                 setname:
                   type: string
                   format: "Tenth Edition"
@@ -46,19 +46,6 @@ paths:
           description: Resource was not found
           # empty body
   /api/card/all:
-    parameters:
-      - in: path
-        name: cardName
-        schema:
-          type: string
-        required: true
-        description: Name of a mtg card
-      - in: path
-        name: setName
-        schema:
-          type: string
-        required: true
-       description: Name of a mtg card set
     get:
       operationId: returnAllCardEntries
       description: get all cards out of user collection
@@ -198,14 +185,14 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/name/{cardName}/set/name/{setName}:
+  /api/card/number/{number}/set/name/{setName}:
     parameters:
       - in: path
-        name: cardName
+        name: number
         schema:
           type: string
         required: true
-        description: Name of a mtg card
+        description: Number of a mtg card
       - in: path
         name: setName
         schema:
@@ -349,14 +336,14 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/name/{cardName}/set/name/{setName}:
+  /api/card/number/{number}/set/name/{setName}:
     parameters:
       - in: path
-        name: cardName
+        name: number
         schema:
           type: string
         required: true
-        description: Name of a mtg card
+        description: Number of a mtg card
       - in: path
         name: setName
         schema:
@@ -500,14 +487,14 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/name/{cardName}/set/name/{setName}:
+  /api/card/number/{number}/set/name/{setName}:
     parameters:
       - in: path
-        name: cardName
+        name: number
         schema:
           type: string
         required: true
-        description: Name of a mtg card
+        description: Number of a mtg card
       - in: path
         name: setName
         schema:

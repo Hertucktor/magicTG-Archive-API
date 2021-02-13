@@ -12,7 +12,7 @@ import (
 
 type ReqCard struct {
 	Name string
-	SetName string
+	number string
 }
 
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	results, err := mongodb.SingleCardInfo(reqCard.Name, reqCard.SetName, "allCards")
+	results, err := mongodb.SingleCardInfo(reqCard.Name, reqCard.number, "allCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -71,9 +71,9 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
-	setName := vars["setName"]
+	number := vars["number"]
 
-	results, err := mongodb.SingleCardInfo(cardName, setName, "myCards")
+	results, err := mongodb.SingleCardInfo(cardName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -95,9 +95,9 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
-	setName := vars["setName"]
+	number := vars["number"]
 
-	results, err := mongodb.SingleCardInfo(cardName, setName, "myCards")
+	results, err := mongodb.SingleCardInfo(cardName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -115,7 +115,7 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		log.Fatal().Err(err)
 	}
 
-	if err = mongodb.UpdateSingleCard(cardName,setName,card.Quantity,"myCards"); err != nil {
+	if err = mongodb.UpdateSingleCard(cardName,number,card.Quantity,"myCards"); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
 	}
 
@@ -125,9 +125,9 @@ func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: deleteSingleCardEntry")
 	vars := mux.Vars(r)
 	cardName := vars["cardName"]
-	setName := vars["setName"]
+	number := vars["number"]
 
-	result, err := mongodb.DeleteSingleCard(cardName, setName, "myCards")
+	result, err := mongodb.DeleteSingleCard(cardName, number, "myCards")
 	if err != nil {
 		log.Fatal().Err(err)
 	}

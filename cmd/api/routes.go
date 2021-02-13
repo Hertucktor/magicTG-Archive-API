@@ -23,9 +23,9 @@ func handleRequests(){
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	api.HandleFunc("/card/all", returnAllCardEntries).Methods(http.MethodGet)
-	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
-	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
-	api.HandleFunc("/card/name/{cardName}/set/name/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
+	api.HandleFunc("/card/number/{number}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	api.HandleFunc("/card/number/{number}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
+	api.HandleFunc("/card/number/{number}/set/name/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
 
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")

@@ -93,9 +93,9 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bson.M, error) {
+func SingleCardInfo(cardName string, number string, dbCollection string) ([]bson.M, error) {
 	var databaseResponse []bson.M
-	var readFilter = bson.M{"name": cardName, "setname": setName}
+	var readFilter = bson.M{"name": cardName, "number": number}
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -139,9 +139,9 @@ func SingleCardInfo(cardName string, setName string, dbCollection string) ([]bso
 	return databaseResponse, err
 }
 
-func DeleteSingleCard(cardName string, setName string, dbCollection string) (*mongo.DeleteResult, error) {
+func DeleteSingleCard(cardName string, number string, dbCollection string) (*mongo.DeleteResult, error) {
 	var deleteResult *mongo.DeleteResult
-	var deleteFilter = bson.M{"name": cardName, "setname": setName}
+	var deleteFilter = bson.M{"name": cardName, "number": number}
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
@@ -175,9 +175,9 @@ func DeleteSingleCard(cardName string, setName string, dbCollection string) (*mo
 	return deleteResult, err
 }
 
-func UpdateSingleCard(cardName string, setName string, cardQuantity int, dbCollection string) error {
+func UpdateSingleCard(cardName string, number string, cardQuantity int, dbCollection string) error {
 	var newQuantity = cardQuantity+1
-	var updateFilter = bson.M{"name": cardName, "setname":setName}
+	var updateFilter = bson.M{"name": cardName, "number":number}
 	var updateSet = bson.D{
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
