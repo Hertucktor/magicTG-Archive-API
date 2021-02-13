@@ -10,6 +10,11 @@ import (
 	"net/http"
 )
 
+type ReqCard struct {
+	Name string
+	SetName string
+}
+
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
 	var reqCard ReqCard
