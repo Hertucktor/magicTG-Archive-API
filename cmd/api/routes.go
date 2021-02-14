@@ -18,8 +18,8 @@ func handleRequests(){
 	status.HandleFunc("/check",statusCheck).Methods(http.MethodGet)
 
 	//Interface for UI
-	ui := myRouter.PathPrefix("/").Subrouter()
-	ui.HandleFunc("/", homePage)
+	/*ui := myRouter.PathPrefix("/").Subrouter()
+	ui.HandleFunc("/", homePage)*/
 
 	//CRUD Operations
 	api := myRouter.PathPrefix("/api").Subrouter()
