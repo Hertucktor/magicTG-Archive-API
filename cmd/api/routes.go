@@ -7,7 +7,7 @@ import (
 )
 
 func handleRequests(){
-	var port = "127.0.0.1:8080"
+	var port = ":8080"
 	log.Info().Msgf("Starting API on port:", port)
 
 	myRouter := mux.NewRouter().StrictSlash(true)

@@ -1,26 +1,20 @@
 /* Add a black background color to the top navigation */
 body {
     margin: 0;
+    font-family: "Open Sans",sans-serif;
 }
 
 .topnav {
-    padding: 6px 16px;
-    margin: 0 auto;
-    background-color: black;
     overflow: hidden;
+    background-color: black;
 }
 
-/* Style the links inside the navigation bar */
 .topnav a {
     float: left;
     color: #fff;
-    text-align: center;
-
+    padding: 14px 16px;
     text-decoration: none;
-}
-.topnav a span {
-    font-size: 14px;
-    font-family: "Open Sans",sans-serif;
+    font-size: 17px;
 }
 
 /* Change the color of links on hover */
@@ -28,6 +22,12 @@ body {
     color: #ff6600;
 }
 
-.topnav a .logo {
-    color: #fff;
+.topnav a span {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+.topnav a picture {
+    margin-right: 100px;
 }
