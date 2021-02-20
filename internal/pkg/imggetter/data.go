@@ -1,4 +1,4 @@
-package main
+package imggetter
 
 type Img struct {
 	SetName string

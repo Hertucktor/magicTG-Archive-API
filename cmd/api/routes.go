@@ -21,13 +21,16 @@ func handleRequests(){
 	/*ui := myRouter.PathPrefix("/").Subrouter()
 	ui.HandleFunc("/", homePage)*/
 
-	//CRUD Operations
+	//CRUD Operations for card info
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	api.HandleFunc("/card/all", returnAllCardEntries).Methods(http.MethodGet)
 	api.HandleFunc("/card/number/{number}/set/name/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
 	api.HandleFunc("/card/number/{number}/set/name/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
 	api.HandleFunc("/card/number/{number}/set/name/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
+
+	//CRUD Operations for img info
+	api.HandleFunc("/img/set/name/{setName}", returnSingleImg).Methods(http.MethodGet)
 
 	//Open http connection
 	if err := http.ListenAndServe(port, myRouter); err != nil {

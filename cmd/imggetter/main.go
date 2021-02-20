@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"magicTGArchive/internal/pkg/imggetter"
 )
 
 var dbCollName = "setImages"
 
 func main() {
-	var img Img
+	var img imggetter.Img
 	var err error
 	var imgBaseURL = "https://media.magic.wizards.com/images/featured/"
 	var setName = "Modern Horizons"
@@ -28,12 +29,12 @@ func main() {
 	fmt.Println(requestURL)
 }
 
-func ReturnImgUrl(setName string) (Img, error) {
-	var attributes Img
+func ReturnImgUrl(setName string) (imggetter.Img, error) {
+	var attributes imggetter.Img
 	var singleResult bson.M
 	var err error
 
-	if singleResult, err = SingleSetImg(setName, dbCollName); err != nil {
+	if singleResult, err = imggetter.SingleSetImg(setName, dbCollName); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't read attributes from db")
 		return attributes, err
 	}
