@@ -17,10 +17,6 @@ func handleRequests(){
 	status.HandleFunc("/alive",statusAlive).Methods(http.MethodGet)
 	status.HandleFunc("/check",statusCheck).Methods(http.MethodGet)
 
-	//Interface for UI
-	/*ui := myRouter.PathPrefix("/").Subrouter()
-	ui.HandleFunc("/", homePage)*/
-
 	//CRUD Operations for card info
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
