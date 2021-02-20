@@ -1,4 +1,4 @@
-package imggetter
+package imgHandler
 
 import (
 	"github.com/rs/zerolog/log"

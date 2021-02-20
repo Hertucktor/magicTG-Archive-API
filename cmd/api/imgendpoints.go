@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"magicTGArchive/internal/pkg/imggetter"
+	"magicTGArchive/internal/pkg/imgHandler"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ var dbCollName = "setImages"
 
 func returnSingleImg(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnSingleImg")
-	var img imggetter.Img
+	var img imgHandler.Img
 	var readResult bson.M
 	var err error
 	var imgBaseURL = "https://media.magic.wizards.com/images/featured/"
@@ -21,7 +21,7 @@ func returnSingleImg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	setName := vars["setName"]
 
-	readResult, err = imggetter.SingleSetImg(setName, dbCollName)
+	readResult, err = imgHandler.SingleSetImg(setName, dbCollName)
 
 	marshalled, err := json.Marshal(readResult)
 	if err != nil {

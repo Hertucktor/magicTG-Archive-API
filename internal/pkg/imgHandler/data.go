@@ -1,4 +1,4 @@
-package imggetter
+package imgHandler
 
 type Img struct {
 	SetName string
