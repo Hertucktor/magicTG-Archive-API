@@ -29,7 +29,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
-	results, err := mongodb.SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards")
+	results, err := SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -48,7 +48,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Fatal().Err(err)
 	}
 
-	if err = mongodb.InsertCard(card,"myCards"); err != nil {
+	if err = InsertCard(card,"myCards"); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
 	}
 }
@@ -56,7 +56,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
-	results, err := mongodb.AllCardInfo("myCards")
+	results, err := AllCardInfo("myCards")
 	response , err := json.Marshal(results)
 	if err != nil {
 		log.Fatal().Err(err)
@@ -74,7 +74,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	number := vars["number"]
 
 
-	results, err := mongodb.SingleCardInfo(setName, number, "myCards")
+	results, err := SingleCardInfo(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -98,7 +98,7 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	setName := vars["setName"]
 	number := vars["number"]
 
-	results, err := mongodb.SingleCardInfo(setName, number, "myCards")
+	results, err := SingleCardInfo(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
 	}
@@ -116,7 +116,7 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		log.Fatal().Err(err)
 	}
 
-	if err = mongodb.UpdateSingleCard(setName, number, card.Quantity,"myCards"); err != nil {
+	if err = UpdateSingleCard(setName, number, card.Quantity,"myCards"); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
 	}
 
@@ -128,7 +128,7 @@ func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	setName := vars["setName"]
 	number := vars["number"]
 
-	result, err := mongodb.DeleteSingleCard(setName, number, "myCards")
+	result, err := DeleteSingleCard(setName, number, "myCards")
 	if err != nil {
 		log.Fatal().Err(err)
 	}

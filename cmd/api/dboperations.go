@@ -1,20 +1,21 @@
-package mongodb
+package main
 
 import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertCard(cardInfo DBCard, dbCollection string) error {
+func InsertCard(cardInfo mongodb.DBCard, dbCollection string) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return err
 	}
 
-	client, ctx, cancelCtx, err := CreateClient()
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return err
@@ -52,7 +53,7 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 		return nil, err
 	}
 
-	client, ctx, cancelCtx, err := CreateClient()
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return cards, err
@@ -103,7 +104,7 @@ func SingleCardInfo(setName string, number string, dbCollection string) ([]bson.
 		return databaseResponse, err
 	}
 
-	client, ctx, cancelCtx, err := CreateClient()
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
 	}
@@ -148,7 +149,7 @@ func DeleteSingleCard(setName string, number string, dbCollection string) (*mong
 		return deleteResult, err
 	}
 
-	client, ctx, cancelCtx, err := CreateClient()
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return deleteResult, err
@@ -188,7 +189,7 @@ func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollect
 		return err
 	}
 
-	client, ctx, cancelCtx, err := CreateClient()
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: Creating client\n")
 		return err
