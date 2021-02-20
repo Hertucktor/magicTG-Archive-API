@@ -9,7 +9,7 @@ import (
 )
 
 func ReadFromCLI() (string, string,string, error) {
-	var inputCardName string
+	var inputCardNumber string
 	var inputSetName string
 	var language string
 
@@ -29,14 +29,14 @@ func ReadFromCLI() (string, string,string, error) {
 
 		if c.String("lang") == "de" {
 			language = "de"
-			fmt.Print("Trage den Kartennamen ein: ")
-			inputCardName, _ = reader.ReadString('\n')
-			fmt.Print("Trage den Setnamen ein: ")
+			fmt.Print("Trage die Kartennummer ein: ")
+			inputCardNumber, _ = reader.ReadString('\n')
+			fmt.Print("Trage den Set Namen ein: ")
 			inputSetName, _ = reader.ReadString('\n')
 		} else {
 			language = "en"
-			fmt.Print("Enter the card name: ")
-			inputCardName, _ = reader.ReadString('\n')
+			fmt.Print("Enter the card number: ")
+			inputCardNumber, _ = reader.ReadString('\n')
 			fmt.Print("Enter the set name: ")
 			inputSetName, _ = reader.ReadString('\n')
 		}
@@ -49,5 +49,5 @@ func ReadFromCLI() (string, string,string, error) {
 		return "", "", "", err
 	}
 
-	return language, inputCardName, inputSetName, err
+	return language, inputCardNumber, inputSetName, err
 }
