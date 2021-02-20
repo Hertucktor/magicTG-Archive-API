@@ -43,7 +43,7 @@ func handleRequests(){
 }
 
 func upload(w http.ResponseWriter, r *http.Request){
-	log.Info().Msgf("Endpoint Hit: upload with method:",r.Method)
+	log.Info().Msgf("Endpoint Hit: upload with method:", r.Method)
 
 	if r.Method == "GET" {
 		cruTime := time.Now().Unix()
@@ -94,7 +94,5 @@ func upload(w http.ResponseWriter, r *http.Request){
 			if _, err = io.Copy(f,file); err != nil {
 				log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't copy file to f")
 			}
-
 		}
-
 }
