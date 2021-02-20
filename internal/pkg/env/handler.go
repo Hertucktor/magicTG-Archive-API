@@ -5,18 +5,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Conf struct {
-	DbUser string
-	DbPass string
-	DbPort string
-	DbName string
-}
-
 func ReceiveEnvVars() (Conf, error) {
 	var err error
 	viper.SetConfigFile(".env")
 
-	if err := viper.ReadInConfig(); err != nil {
+	if err = viper.ReadInConfig(); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: loading env vars")
 		return Conf{}, err
 	}
@@ -26,6 +19,9 @@ func ReceiveEnvVars() (Conf, error) {
 		DbPass: viper.Get("DB_PASS").(string),
 		DbPort: viper.Get("DB_PORT").(string),
 		DbName: viper.Get("DB_NAME").(string),
+		DbCollAllCards: viper.Get("DB_COLLECTION_ALLCARDS").(string),
+		DbCollMyCards: viper.Get("DB_COLLECTION_ALLCARDS").(string),
+		DbCollSetImages: viper.Get("DB_COLLECTION_ALLCARDS").(string),
 	}
 
 	return conf, err
