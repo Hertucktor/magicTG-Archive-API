@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 /*
@@ -13,13 +14,13 @@ RequestAllCards receives a response with type *http.Response from
 the mtg api containing 100 cards.
 Returning the response and an error
 */
-func RequestAllCards(page string) (APIResponseForMultipleCards, error) {
+func RequestAllCards(page int) (APIResponseForMultipleCards, error) {
 	var response APIResponseForMultipleCards
 	var resp *http.Response
 	var err error
 	var body []byte
 	//GET request to URL with page param
-	if resp, err = http.Get("https://api.magicthegathering.io/v1/cards?page="+page); err != nil{
+	if resp, err = http.Get("https://api.magicthegathering.io/v1/cards?page="+strconv.Itoa(page)); err != nil{
 		log.Error().Timestamp().Err(err).Msg("Error: problem with http GET request\n")
 		return response, err
 	}
