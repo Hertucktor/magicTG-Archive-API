@@ -4,13 +4,13 @@ import (
 	"encoding/csv"
 	"fmt"
 	"github.com/rs/zerolog/log"
-	"io"
 	"os"
 )
 
 //var dbCollName = "setImages"
 
 func main() {
+	var filePath = "./csv/mtgSetIcons.csv"
 	/*var img imgHandler.Img
 	//var imgBaseURL = "https://media.magic.wizards.com/images/featured/"
 
@@ -19,31 +19,21 @@ func main() {
 	}*/
 
 
-	ReadCSV()
+	ReadCSV(filePath)
 
 }
 
-func ReadCSV(){
-	fmt.Println("s")
-	csvFile, err := os.Open("./csv/mtgSetIcons.csv")
-	fmt.Println(csvFile)
+func ReadCSV(fileName string){
+	csvFile, err := os.Open(fileName)
+
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't open CSV")
 	}
 
-	r := csv.NewReader(csvFile)
-	fmt.Println(r)
-	end := false
-	for end == true  {
-		record, err := r.Read()
-		if err == io.EOF{
-			end = true
-		}
-		if err != nil {
-			log.Fatal().Timestamp().Err(err)
-		}
+	reader := csv.NewReader(csvFile)
 
-		fmt.Printf("Question: %s Answer %s\n", record[0], record[1])
-	}
+	records, _ := reader.ReadAll()
+	//first index for column, second index for line entry
+	fmt.Println(records[1][0])
 
 }
