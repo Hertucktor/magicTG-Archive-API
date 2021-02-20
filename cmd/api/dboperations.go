@@ -94,8 +94,8 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(setName string, number string, dbCollection string) ([]bson.M, error) {
-	var databaseResponse []bson.M
+func SingleCardInfo(setName string, number string, dbCollection string) (bson.M, error) {
+	var databaseResponse bson.M
 	var readFilter = bson.M{"setname": setName, "number": number}
 
 	conf, err := env.ReceiveEnvVars()
@@ -111,7 +111,7 @@ func SingleCardInfo(setName string, number string, dbCollection string) ([]bson.
 
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
 		}
 		cancelCtx()
 	}()
@@ -119,23 +119,11 @@ func SingleCardInfo(setName string, number string, dbCollection string) ([]bson.
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
 
-	cursor, err := collection.Find(ctx, readFilter)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: cursor couldn't be created\n")
-		return databaseResponse, err
+	if err = collection.FindOne(ctx, readFilter).Decode(&databaseResponse); err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't find single")
 	}
+	log.Info().Timestamp().Msgf("Received single result:", databaseResponse)
 
-	defer func() {
-		if err = cursor.Close(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor", cursor)
-		}
-		log.Info().Msg("Success: Closed cursor\n")
-	}()
-
-	if err = cursor.All(ctx, &databaseResponse); err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: problem with the cursor\n")
-		return databaseResponse, err
-	}
 
 	return databaseResponse, err
 }

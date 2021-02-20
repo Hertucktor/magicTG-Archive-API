@@ -22,34 +22,36 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
+		log.Error().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
 	}
 
 	if err = json.Unmarshal(reqBody, &reqCard);err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 	//read from allCards collection
 	results, err := SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards")
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
+		w.WriteHeader(http.StatusBadRequest)
+		_,_ = w.Write([]byte("The card you requested is not in storage"))
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard for create new entry")
+		return
 	}
-	fmt.Println(results)
 
-	response , err := json.Marshal(results[0])
+	response , err := json.Marshal(results)
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	if _,err = w.Write(response); err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	if err = json.Unmarshal(response, &card); err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 	//insert into myCards collection
 	if err = InsertCard(card,"myCards"); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
 	}
 }
 
@@ -62,15 +64,14 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 
 	response , err := json.Marshal(results)
 	if err != nil {
-		log.Fatal().Timestamp().Err(err)
+		log.Error().Timestamp().Err(err)
 	}
 
 	if _,err = w.Write(response); err != nil {
-		log.Fatal().Timestamp().Err(err)
+		log.Error().Timestamp().Err(err)
 	}
 }
 
-//FIXME: Return only one card from myCards collection
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
 
@@ -81,16 +82,19 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	//reads one entry from myCards collection
 	results, err := SingleCardInfo(setName, number, "myCards")
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
+		w.WriteHeader(http.StatusBadRequest)
+		_,_ = w.Write([]byte("The card you requested is not in storage"))
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive reqCard for return single card")
+		return
 	}
 
 	response , err := json.Marshal(results)
 	if err != nil {
-		log.Fatal().Timestamp().Err(err)
+		log.Error().Timestamp().Err(err)
 	}
 
 	if _,err = w.Write(response); err != nil {
-		log.Fatal().Timestamp().Err(err)
+		log.Error().Timestamp().Err(err)
 	}
 }
 
@@ -104,24 +108,27 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	//reads one entry from myCards collection
 	results, err := SingleCardInfo(setName, number, "myCards")
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard")
+		w.WriteHeader(http.StatusBadRequest)
+		_,_ = w.Write([]byte("The card you requested is not in storage"))
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard for update single card")
+		return
 	}
 
-	response , err := json.Marshal(results[0])
+	response , err := json.Marshal(results)
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	if _,err = w.Write(response); err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 
 	if err = json.Unmarshal(response, &card); err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
 	}
 	//update one entry in myCards collection
 	if err = UpdateSingleCard(setName, number, card.Quantity,"myCards"); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
 	}
 }
 
@@ -133,7 +140,8 @@ func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	//reads one entry from myCards collection
 	result, err := DeleteSingleCard(setName, number, "myCards")
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Err(err)
+		return
 	}
 
 	_,_ = fmt.Fprint(w, result)
