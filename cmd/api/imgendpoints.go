@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -42,5 +43,10 @@ func returnSingleImg(w http.ResponseWriter, r *http.Request) {
 	if _, err = w.Write(marshalled); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't write url to user")
 	}
+}
 
+func uploadImg(w http.ResponseWriter, r *http.Request){
+	log.Info().Msgf("Endpoint Hit: uploadImg with method:", r.Method)
+
+	fmt.Fprintf(w, "Uploading File")
 }
