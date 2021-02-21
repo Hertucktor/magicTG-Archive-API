@@ -45,7 +45,7 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/all:
+  /api/cards:
     get:
       operationId: returnAllCardEntries
       description: get all cards out of user collection
@@ -185,7 +185,7 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/number/{number}/set/name/{setName}:
+  /api/cards/collector-numbers/{number}/set-names/{setName}:
     parameters:
       - in: path
         name: number
@@ -336,7 +336,7 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/number/{number}/set/name/{setName}:
+  /api/cards/collector-numbers/{number}/set-names/{setName}:
     parameters:
       - in: path
         name: number
@@ -487,7 +487,7 @@ paths:
         404:
           description: Resource was not found
           # empty body
-  /api/card/number/{number}/set/name/{setName}:
+  /api/cards/collector-numbers/{number}/set-names/{setName}:
     parameters:
       - in: path
         name: number
