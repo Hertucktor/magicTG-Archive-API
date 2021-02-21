@@ -638,3 +638,13 @@ paths:
         404:
           description: Resource was not found
           # empty body
+  /api/images/set-names/{setName}:
+    parameters:
+      - in: path
+        name: setName
+        schema:
+          type: string
+        required: true
+        description: Name of a mtg card set
+    post:
+

@@ -33,8 +33,8 @@ func handleRequests(){
 	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
 
 	//CRUD Operations for img info
-	api.HandleFunc("/img/set/name/{setName}", returnSingleImg).Methods(http.MethodGet)
-	api.HandleFunc("/img/upload", upload).Methods(http.MethodPost)
+	api.HandleFunc("/images/set-names/{setName}", returnSingleImg).Methods(http.MethodGet)
+	api.HandleFunc("/img/upload", upload)
 
 	//Open http connection
 	if err := http.ListenAndServe(port, myRouter); err != nil {
