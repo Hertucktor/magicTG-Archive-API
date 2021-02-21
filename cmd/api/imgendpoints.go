@@ -68,10 +68,10 @@ func uploadImg(w http.ResponseWriter, r *http.Request){
 			log.Error().Timestamp().Err(err).Msg("Error: couldn't close file")
 		}
 	}()
-	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	fmt.Printf("File Size: %+v\n", handler.Size)
-	fmt.Printf("MIME Header: %+v\n", handler.Header)
-	//tempFileLocation := "/var/folders/mq/sb338gd91hd0psz4dx8mq2t40000gp/T/\n"
+	log.Info().Msgf("Uploaded File: %+v", handler.Filename)
+	log.Info().Msgf("File Size: %+v", handler.Size)
+	log.Info().Msgf("MIME Header: %+v", handler.Header)
+
 	// Create a temporary file within our temp-images directory that follows
 	// a particular naming pattern
 	tempFile, err := ioutil.TempFile("temp/images/upload", "upload-*.png")
