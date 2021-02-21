@@ -6,14 +6,13 @@ import (
 )
 
 func main() {
+	var port = ":8081"
+	log.Info().Msgf("Serving static files on port %v", port)
+
 	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	log.Info().Msg("Listening on :8081...")
-
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal().Err(err)
 	}
 }
-
-
