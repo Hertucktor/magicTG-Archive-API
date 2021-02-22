@@ -4,23 +4,80 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>MTG:Archive - landing page</title>
-    <link href="stylesheets/navbar.css" rel="stylesheet" type="text/css">
+    <title>MTG:Archive - my collection</title>
+    <!--custom css section -->
+    <link rel="stylesheet" href="stylesheets/navbar.css" type="text/css">
+    <link rel="stylesheet" href="stylesheets/collection-separator.css" type="text/css">
+    <link rel="stylesheet" href="stylesheets/collection-text.css" type="text/css">
+    <!--favicon section-->
+    <link rel="shortcut icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/favicon.ico" type="image/vnd.microsoft.icon" />
+    <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-16.png" sizes="16x16" />
+    <meta name="google-site-verification" content="WquIfqfWtlm2X62GTeJ-5vDtRrbOVOIT6mFc3vAP5BQ" />
+    <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-32.png" sizes="32x32" />
+    <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-96.png" sizes="96x96" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-57.png" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-72.png" sizes="72x72" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-76.png" sizes="76x76" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-114.png" sizes="114x114" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-120.png" sizes="120x120" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-144.png" sizes="144x144" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-152.png" sizes="152x152" />
+    <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-180.png" sizes="180x180" />
 </head>
 <body>
-<!--Start nav bar -->
-<div class="topnav">
-    <a href="landingpage.html">
-        <picture loading="lazy">
-            <source srcset="img/magic-logo-navbar.webp" type="image/webp">
-            <img src="img/magic-logo-navbar.png" alt="Magic The Gathering Logo" width="115" height="38.47" ></picture></a>
-    <a href="mycollection.html"><span>My Collection</span></a>
-    <a href="inprogress.html"><span>Card Database</span></a>
-    <a href="inprogress.html"><span>Search For Card</span></a>
-    <a href="inprogress.html"><span>Upload CSV</span></a>
-    <a href="fileupload.html"><span>Upload Img</span></a>
-</div>
-<!--End nav bar -->
+    <!--Start nav bar -->
+    <div class="topnav">
+        <a href="landingpage.html">
+            <picture loading="lazy">
+                <source srcset="img/magic-logo-navbar.webp" type="image/webp">
+                <img src="img/magic-logo-navbar.png" alt="Magic The Gathering Logo" width="115" height="38.47" ></picture></a>
+        <a href="mycollection.html"><span>My Collection</span></a>
+        <a href="inprogress.html"><span>Card Database</span></a>
+        <a href="inprogress.html"><span>Search For Card</span></a>
+        <a href="inprogress.html"><span>Upload CSV</span></a>
+        <a href="fileupload.html"><span>Upload Img</span></a>
+    </div>
+    <!--End nav bar -->
+
+    <!--Start separator block -->
+    <div class="hr-sect--white">WHITE</div>
+
+    <div class="hr-sect--blue">BLUE</div>
+
+    <div class="hr-sect--black">BLACK</div>
+
+    <div class="hr-sect--red">RED</div>
+
+    <div class="hr-sect--green">GREEN</div>
+
+    <div class="hr-sect--multi-color">Mulit-color</div>
+
+    <div class="hr-sect--artefact">ARTEFACT</div>
+
+    <div class="hr-sect--land">LAND</div>
+    <div class="divland" id="divland">Land</div>
+
+    <div class="hr-sect--modal-double-sided-cards">MODAL DOUBLE-SIDED CARDS</div>
+    <div class="divmeld" id="divmeld">MODAL DOUBLE-SIDED CARDS</div>
+
+    <!--End separator block -->
+
+    <!--Start selector block -->
+    <p class="rtecenter" style="font-size: 1.5rem">
+        <a href="#" onclick="javascript: hideAllButThis('divwhite'); return false;">WEISS</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divblue'); return false;">BLAU</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divblack'); return false;">SCHWARZ</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divred'); return false;">ROT</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divgreen'); return false;">GRÜN</a>
+        <br>
+        <a href="#" onclick="javascript: hideAllButThis('divmulticolored'); return false;">MEHRFARBIG</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divartifact'); return false;">ARTEFAKT</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divland'); return false;">LAND</a> |
+        <a href="#" onclick="javascript: hideAllButThis('divmeld'); return false;">MODALE DOPPELSEITIGE KARTEN</a> |
+        <a href="#" onclick="javascript: showAllBlocks(); return false;">ALLE KARTEN</a>
+    </p>
+    <!--End selector block-->
+
 
 </body>
 </html>
