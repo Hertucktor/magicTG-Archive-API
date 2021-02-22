@@ -7,11 +7,11 @@ import (
 
 func main() {
 	// Open photos.
-	imgA, err := images.Open("./temp/images/compare/i0vHvg5vVd.png")
+	imgA, err := images.Open("./temp/images/compare/ModernHorizons.png")
 	if err != nil {
 		panic(err)
 	}
-	imgB, err := images.Open("./temp/images/compare/M20_Product_Archives_Symbol.png")
+	imgB, err := images.Open("./temp/images/compare/Core20.png")
 	if err != nil {
 		panic(err)
 	}

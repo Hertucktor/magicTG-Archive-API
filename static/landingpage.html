@@ -4,14 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>MTG:Archive - Img Upload</title>
+    <title>MTG:Archive - landing page</title>
     <link href="stylesheets/navbar.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-
     <!--Start nav bar -->
     <div class="topnav">
-        <a aria-label="← Back to the homepage" title="← Back to the homepage" href="landingpage.html">
+        <a href="landingpage.html">
             <picture loading="lazy">
                 <source srcset="img/magic-logo-navbar.webp" type="image/webp">
                 <img src="img/magic-logo-navbar.png" alt="Magic The Gathering Logo" width="115" height="38.47" ></picture></a>
@@ -23,10 +22,5 @@
     </div>
     <!--End nav bar -->
 
-
-    <form enctype="multipart/form-data" action="http://localhost:8080/img/upload" method="post">
-        <input type="file" name="myFile" />
-        <input type="submit" value="upload" />
-    </form>
 </body>
 </html>
