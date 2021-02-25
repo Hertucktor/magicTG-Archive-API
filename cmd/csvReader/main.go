@@ -11,13 +11,12 @@ import (
 
 func main() {
 	var filePath = "./csv/mtgSetIcons.csv"
-	/*var img imgHandler.Img
+	/*var img csvReader.Img
 	//var imgBaseURL = "https://media.magic.wizards.com/images/featured/"
 
-	if err := imgHandler.InsertSetImg(img, dbCollName); err != nil {
+	if err := csvReader.InsertSetImg(img, dbCollName); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
 	}*/
-
 
 	ReadCSV(filePath)
 
