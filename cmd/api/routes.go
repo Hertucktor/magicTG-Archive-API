@@ -20,8 +20,9 @@ func setupRoutes(){
 	//CRUD Operations for card info
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
-	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet)
-	api.HandleFunc("/cards/collector-numbers/{number}/set-names/{setName}", returnSingleCardEntry).Methods(http.MethodGet)
+	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet) //From allCards Coll
+	api.HandleFunc("/cards/set-names/{setName}", returnAllCardsBySet).Methods(http.MethodGet) //From allCards Coll
+	api.HandleFunc("/cards/collector-numbers/{number}/set-names/{setName}", returnSingleCardEntry).Methods(http.MethodGet) //From myCards Coll
 	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
 	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
 

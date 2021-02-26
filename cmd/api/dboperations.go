@@ -94,6 +94,57 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 	return cards, err
 }
 
+func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
+	var filter = bson.M{"setname": setName}
+	var card bson.M
+	var cards []bson.M
+
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return nil, err
+	}
+
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
+		return cards, err
+	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
+		}
+		cancelCtx()
+	}()
+
+	collection := client.Database(conf.DbName).Collection(dbCollection)
+	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msgf("Error: ")
+		return cards, err
+	}
+
+	defer func() {
+		if err = cursor.Close(ctx); err != nil {
+			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:\n", cursor)
+		}
+		log.Info().Msg("Closed cursor:")
+	}()
+
+	for cursor.Next(ctx) {
+		if err = cursor.Decode(&card); err != nil {
+			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
+			return cards, err
+		}
+		cards = append(cards, card)
+	}
+
+	return cards, err
+}
+
 func SingleCardInfo(setName string, number string, dbCollection string) (bson.M, error) {
 	var databaseResponse bson.M
 	var readFilter = bson.M{"setname": setName, "number": number}

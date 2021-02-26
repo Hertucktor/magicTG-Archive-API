@@ -60,7 +60,32 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
 	//read all entries out of myCards collection
-	results, err := AllCardInfo("myCards")
+	results, err := AllCardInfo("allCards")
+
+	response , err := json.Marshal(results)
+	if err != nil {
+		log.Error().Timestamp().Err(err)
+	}
+
+	if _,err = w.Write(response); err != nil {
+		log.Error().Timestamp().Err(err)
+	}
+}
+
+func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
+	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
+
+	vars := mux.Vars(r)
+	setName := vars["setName"]
+
+	//reads all entries by set name from allCards collection
+	results, err := AllCardsBySet(setName, "allCards")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_,_ = w.Write([]byte("The card you requested is not in storage"))
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive reqCard for return single card")
+		return
+	}
 
 	response , err := json.Marshal(results)
 	if err != nil {
