@@ -1,38 +1,69 @@
 package main
 
 import (
-	"encoding/csv"
 	"fmt"
 	"github.com/rs/zerolog/log"
-	"os"
+	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/mongodb"
 )
 
-//var dbCollName = "setImages"
+var dbCollName = "imgInfo"
+var filePath = "./csv/mtgSetIcons.csv"
+
+type ImgCollection struct {
+	Imgs []Img
+}
+type Img struct {
+	SetName string
+	ImgLink string
+}
 
 func main() {
-	var filePath = "./csv/mtgSetIcons.csv"
-	/*var img csvReader.Img
-	//var imgBaseURL = "https://media.magic.wizards.com/images/featured/"
+	//var img Img
 
-	if err := csvReader.InsertSetImg(img, dbCollName); err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
-	}*/
+	entries, err := ReadCSV(filePath)
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't read csv file")
+	}
+	//first index for row, second index for column
+	fmt.Println(entries[0][0])
 
-	ReadCSV(filePath)
+	//if err = InsertImgInfo(img, dbCollName); err != nil {
+	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
+	//}
 
 }
 
-func ReadCSV(fileName string){
-	csvFile, err := os.Open(fileName)
-
+func InsertImgInfo(imgInfo Img, dbCollection string) error {
+	conf, err := env.ReceiveEnvVars()
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't open CSV")
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return err
 	}
 
-	reader := csv.NewReader(csvFile)
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
+		return err
+	}
 
-	records, _ := reader.ReadAll()
-	//first index for column, second index for line entry
-	fmt.Println(records[1][0])
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
+		}
+		cancelCtx()
+	}()
 
+	collection := client.Database(conf.DbName).Collection(dbCollection)
+	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+
+	insertResult, err := collection.InsertOne(ctx, imgInfo)
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, conf.DbName)
+		return err
+	}
+
+	log.Info().Msgf("Success: insertion result:\n", insertResult)
+
+	return err
 }

@@ -1,11 +1,11 @@
 test:
 	go test -v -cover -coverprofile=c.out ./internal/pkg/...; \
     go tool cover -html=c.out -o coverage.html
-imggetter:
-	go build -o imggetter --mod=vendor ./cmd/imggetter ;\
-	./bin/imggetter
+csvReader:
+	go build -o bin/csvReader --mod=vendor ./cmd/csvReader ;\
+	./bin/csvReader
 importer:
-	go build -o importer --mod=vendor ./cmd/importer ;\
+	go build -o bin/importer --mod=vendor ./cmd/importer ;\
     ./bin/importer
 api:
 	go build -o bin/api --mod=vendor ./cmd/api ;\
