@@ -21,3 +21,24 @@ func ReadCSV(fileName string) ([][]string, error){
 
 	return records,err
 }
+
+func ConvertCSVEntriesIntoStruct() (ImgCollection, error){
+	var img Img
+	var imgColl ImgCollection
+
+	entries, err := ReadCSV(filePath)
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't read csv file")
+		return ImgCollection{}, err
+	}
+
+	//first index for row, second index for column in csv file
+	for row:=1;row<len(entries);row++{
+
+		img.SetName = entries[row][0]
+		img.ImgLink = entries[row][1]
+		imgColl.Imgs = append(imgColl.Imgs, img)
+
+	}
+	return imgColl, err
+}

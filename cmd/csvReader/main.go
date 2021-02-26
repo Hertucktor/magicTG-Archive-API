@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"magicTGArchive/internal/pkg/env"
 	"magicTGArchive/internal/pkg/mongodb"
@@ -19,28 +18,16 @@ type Img struct {
 }
 
 func main() {
-	var img Img
-	var imgColl ImgCollection
-
-	entries, err := ReadCSV(filePath)
+	imgInfos, err := ConvertCSVEntriesIntoStruct()
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't read csv file")
-	}
-	//first index for row, second index for column
-
-	for row:=1;row<len(entries);row++{
-
-		img.SetName = entries[row][0]
-		img.ImgLink = entries[row][1]
-		imgColl.Imgs = append(imgColl.Imgs, img)
-
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't ")
 	}
 
-	fmt.Println(imgColl)
-
-	//if err = InsertImgInfo(img, dbCollName); err != nil {
-	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
-	//}
+	for _, imgInfo := range imgInfos.Imgs{
+		if err := InsertImgInfo(imgInfo, dbCollName); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
+		}
+	}
 
 }
 
