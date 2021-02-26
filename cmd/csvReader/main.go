@@ -19,14 +19,24 @@ type Img struct {
 }
 
 func main() {
-	//var img Img
+	var img Img
+	var imgColl ImgCollection
 
 	entries, err := ReadCSV(filePath)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't read csv file")
 	}
 	//first index for row, second index for column
-	fmt.Println(entries[0][0])
+
+	for row:=1;row<len(entries);row++{
+
+		img.SetName = entries[row][0]
+		img.ImgLink = entries[row][1]
+		imgColl.Imgs = append(imgColl.Imgs, img)
+
+	}
+
+	fmt.Println(imgColl)
 
 	//if err = InsertImgInfo(img, dbCollName); err != nil {
 	//	log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
