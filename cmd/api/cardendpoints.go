@@ -57,6 +57,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 
 //FIXME: paginate results or db will struggle over time
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
+
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
 	//read all entries out of myCards collection
