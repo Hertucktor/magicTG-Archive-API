@@ -55,7 +55,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//FIXME: paginate results or db will struggle over time
+//FIXME: paginate results or db ctx deadline will close connection
 func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
