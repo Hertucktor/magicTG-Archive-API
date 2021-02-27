@@ -10,5 +10,8 @@ importer:
 api:
 	go build -o bin/api --mod=vendor ./cmd/api ;\
     ./bin/api
+ui:
+	go build -o bin/ui --mod=vendor ./cmd/ui ;\
+    ./bin/ui
 db:
 	docker-compose up
