@@ -26,7 +26,7 @@
     <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-180.png" sizes="180x180" />
 </head>
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--Start nav bar -->
     <div class="topnav">
         <a href="landingpage.html">
@@ -41,6 +41,16 @@
     </div>
     <!--End nav bar -->
 
+    <!--Start selector block -->
+    <!--Make sure the form has the autocomplete function switched off:-->
+    <form autocomplete="off" action="/action_page.php">
+        <div class="autocomplete" style="width:300px;">
+            <label for="setSelector">Select set:</label><input id="setSelector" type="text" name="mySet" placeholder="Set Name">
+        </div>
+        <input type="submit">
+    </form>
+    <!--End selector block -->
+
     <!--Start separator block -->
     <div class="hr-sect--white">WHITE</div>
 
@@ -52,7 +62,7 @@
 
     <div class="hr-sect--green">GREEN</div>
 
-    <div class="hr-sect--multi-color">Mulit-color</div>
+    <div class="hr-sect--multi-color">MULTI-COLOR</div>
 
     <div class="hr-sect--artefact">ARTEFACT</div>
 
@@ -62,7 +72,7 @@
     <!--End separator block -->
 
     <!--Start selector block -->
-    <p class="rtecenter" style="font-size: 1.5rem">Mit dem Klicken auf eines dieser Links, sollen alle Elemente die nicht so heißen, ausgeblendet werden.</p>
+    <!--Mit dem Klicken auf eines dieser Links, sollen alle Elemente die nicht so heißen, ausgeblendet werden.-->
     <p class="rtecenter" style="font-size: 1.5rem">
         <a href="#" onclick="">WEISS</a> |
         <a href="#" onclick="">BLAU</a> |
@@ -83,6 +93,8 @@
         <p>Footer</p>
     </div>
     <!--End Footer -->
+<script src="js/autocompletion.js"></script>
+<script src="js/callForCardsBySet.js"></script>
 
 </body>
 </html>
