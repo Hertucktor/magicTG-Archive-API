@@ -60,7 +60,7 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
-	//read all entries out of myCards collection
+	//read all entries out of allCards collection
 	results, err := AllCards("allCards")
 
 	response , err := json.Marshal(results)
