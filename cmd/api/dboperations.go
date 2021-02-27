@@ -137,8 +137,8 @@ func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
 }
 
 func SingleCardInfo(setName string, number string, dbCollection string) (bson.M, error) {
-	var databaseResponse bson.M
 	var readFilter = bson.M{"setname": setName, "number": number}
+	var databaseResponse bson.M
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -165,7 +165,6 @@ func SingleCardInfo(setName string, number string, dbCollection string) (bson.M,
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't find single")
 	}
 	log.Info().Timestamp().Msgf("Received single result:", databaseResponse)
-
 
 	return databaseResponse, err
 }

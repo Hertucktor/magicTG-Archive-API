@@ -106,7 +106,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	number := vars["number"]
 
 	//reads one entry from myCards collection
-	results, err := SingleCardInfo(setName, number, "myCards")
+	cardResponse, err := SingleCardInfo(setName, number, "myCards")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -114,10 +114,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	response , err := json.Marshal(results)
-	if err != nil {
-		log.Error().Timestamp().Err(err)
-	}
+	response, err := json.Marshal(cardResponse)
 
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)

@@ -8,7 +8,7 @@ import (
 
 func setupRoutes(){
 	var port = ":8080"
-	log.Info().Msgf("Starting API on port:", port)
+	log.Info().Msgf("Starting API on port %v", port)
 
 	myRouter := mux.NewRouter().StrictSlash(true)
 
