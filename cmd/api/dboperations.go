@@ -42,9 +42,8 @@ func InsertCard(cardInfo mongodb.DBCard, dbCollection string) error {
 	return err
 }
 
-func AllCardInfo(dbCollection string) ([]bson.M, error){
+func AllCards(dbCollection string) ([]bson.M, error){
 	var filter = bson.M{}
-	var card bson.M
 	var cards []bson.M
 
 	conf, err := env.ReceiveEnvVars()
@@ -82,13 +81,9 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 		log.Info().Msg("Closed cursor:")
 	}()
 
-	for cursor.Next(ctx) {
-
-		if err = cursor.Decode(&card); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
-			return cards, err
-		}
-		cards = append(cards, card)
+	if err = cursor.All(ctx, &cards); err != nil {
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
+		return cards, err
 	}
 
 	return cards, err
@@ -96,7 +91,6 @@ func AllCardInfo(dbCollection string) ([]bson.M, error){
 
 func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
 	var filter = bson.M{"setname": setName}
-	var card bson.M
 	var cards []bson.M
 
 	conf, err := env.ReceiveEnvVars()
@@ -134,12 +128,9 @@ func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
 		log.Info().Msg("Closed cursor:")
 	}()
 
-	for cursor.Next(ctx) {
-		if err = cursor.Decode(&card); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
-			return cards, err
-		}
-		cards = append(cards, card)
+	if err = cursor.All(ctx, &cards); err != nil {
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
+		return cards, err
 	}
 
 	return cards, err
