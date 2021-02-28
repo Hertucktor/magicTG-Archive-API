@@ -13,7 +13,6 @@
     <!--favicon section-->
     <link rel="shortcut icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-16.png" sizes="16x16" />
-    <meta name="google-site-verification" content="WquIfqfWtlm2X62GTeJ-5vDtRrbOVOIT6mFc3vAP5BQ" />
     <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-32.png" sizes="32x32" />
     <link rel="icon" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-96.png" sizes="96x96" />
     <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-57.png" />
@@ -26,7 +25,6 @@
     <link rel="apple-touch-icon-precomposed" href="https://magic.wizards.com/sites/all/themes/wiz_mtg/icons/touch-icon-180.png" sizes="180x180" />
 </head>
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--Start nav bar -->
     <div class="topnav">
         <a href="landingpage.html">
@@ -42,13 +40,11 @@
     <!--End nav bar -->
 
     <!--Start selector block -->
-    <!--Make sure the form has the autocomplete function switched off:-->
-    <form autocomplete="off" action="/action_page.php">
-        <div class="autocomplete" style="width:300px;">
-            <label for="setSelector">Select set:</label><input id="setSelector" type="text" name="mySet" placeholder="Set Name">
-        </div>
-        <input type="submit">
-    </form>
+    <div class="autocomplete" style="width:300px;">
+        <label for="setSelector">Select set:</label>
+        <input id="setSelector" type="text" name="mySet" placeholder="Set Name"/>
+        <button onclick="receiveSelected()">Search</button>
+    </div>
     <!--End selector block -->
 
     <!--Start separator block -->
@@ -93,8 +89,13 @@
         <p>Footer</p>
     </div>
     <!--End Footer -->
-<script src="js/autocompletion.js"></script>
-<script src="js/callForCardsBySet.js"></script>
+
+
+    <!--Start Script Section -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/autocompletion.js"></script>
+    <script src="js/selection.js"></script>
+    <!--End Script Section -->
 
 </body>
 </html>
