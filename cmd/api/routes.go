@@ -31,6 +31,10 @@ func setupRoutes(){
 	img.HandleFunc("/set-names/{setName}", returnSingleImg).Methods(http.MethodGet)
 	img.HandleFunc("/upload", uploadImg).Methods(http.MethodPost)
 
+	//Serve UI
+	staticDir := "/static/"
+	myRouter.PathPrefix(staticDir).Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("."+staticDir))))
+
 	//Open http connection
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
