@@ -1,46 +1,29 @@
 package imgHandler
 
 import (
+	"context"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/env"
-	"magicTGArchive/internal/pkg/mongodb"
 )
 
-type databaseResponse struct {
-	ID string `bson:"_id"`
-	ImgLink string `bson:"imglink"`
-	SetName string `bson:"setname"`
-}
-
-func SingleSetImg(setName string, dbCollection string) (databaseResponse, error) {
-	var dbresp databaseResponse
+func SingleSetImg(setName string, dbCollection string, client *mongo.Client, ctx context.Context) (Img, error) {
 	var readFilter = bson.M{"setname": setName}
+	var imgInfo Img
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return dbresp, err
+		return imgInfo, err
 	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
+	log.Info().Timestamp().Msgf("Success: created collection: %v", collection.Name())
 
-	if err = collection.FindOne(ctx, readFilter).Decode(&dbresp); err != nil {
+	if err = collection.FindOne(ctx, readFilter).Decode(&imgInfo); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't find document")
 	}
 
-	return dbresp, err
+	return imgInfo, err
 }

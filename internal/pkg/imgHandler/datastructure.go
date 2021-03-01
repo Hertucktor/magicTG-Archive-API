@@ -1,7 +1,7 @@
 package imgHandler
 
 type Img struct {
-	SetName string
-	PicName string
-	Extension string
+	ID string `json:"id" bson:"_id"`
+	ImgLink string `json:"imgLink" bson:"imglink"`
+	SetName string `json:"setName" bson:"setname"`
 }
