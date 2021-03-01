@@ -8,7 +8,7 @@ import (
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertCard(cardInfo mongodb.DBCard, dbCollection string) error {
+func InsertCard(cardInfo mongodb.Card, dbCollection string) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")

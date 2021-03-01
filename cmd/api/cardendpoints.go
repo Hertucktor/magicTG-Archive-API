@@ -18,7 +18,7 @@ type ReqCard struct {
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
 	var reqCard ReqCard
-	var card mongodb.DBCard
+	var card mongodb.Card
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -92,7 +92,7 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		log.Error().Timestamp().Err(err)
 	}
-
+	w.WriteHeader(200)
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)
 	}
@@ -123,7 +123,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: updateSingleCardEntry")
-	var card mongodb.DBCard
+	var card mongodb.Card
 
 	vars := mux.Vars(r)
 	setName := vars["setName"]
