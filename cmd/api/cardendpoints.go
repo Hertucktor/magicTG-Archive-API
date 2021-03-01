@@ -10,22 +10,22 @@ import (
 	"net/http"
 )
 
-type ReqCard struct {
+type RequestBody struct {
 	Number string
 	SetName string
 }
 
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
-	var reqCard ReqCard
+	var requestBody RequestBody
 	var card mongodb.Card
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Fatal: problem with reading request body")
+		log.Error().Timestamp().Err(err).Msg("Fatal: problem with reading request requestBody")
 	}
 
-	if err = json.Unmarshal(reqBody, &reqCard);err != nil {
+	if err = json.Unmarshal(reqBody, &requestBody);err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
 
@@ -35,11 +35,11 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//read from allCards collection
-	results, err := SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards", client, ctx)
+	results, err := SingleCardInfo(requestBody.SetName, requestBody.Number, "allCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
-		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard for create new entry")
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive requestBody for create new entry")
 		return
 	}
 
@@ -57,7 +57,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	//insert into myCards collection
 	if err = InsertCard(card,"myCards", client, ctx); err != nil {
-		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
+		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert requestBody into db")
 	}
 
 	defer func() {
