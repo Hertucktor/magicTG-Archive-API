@@ -41,10 +41,3 @@ func setupRoutes(){
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
 }
-
-func corsOriginMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		next.ServeHTTP(w, r)
-	})
-}
