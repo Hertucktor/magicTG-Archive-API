@@ -11,6 +11,7 @@ func setupRoutes(){
 	log.Info().Msgf("Starting API on port %v", port)
 
 	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	//Status calls
 	status := myRouter.PathPrefix("/status").Subrouter()
@@ -39,5 +40,14 @@ func setupRoutes(){
 	//Open http connection
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
+	}
+}
+
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(404)
+	w.Header().Add("Content-Type", "application/json")
+	_, err := w.Write([]byte("\"There is nothing here\""))
+	if err != nil {
+		log.Err(err).Msg("Cannot write http 404 response body")
 	}
 }
