@@ -1,26 +1,15 @@
-function receiveSelected() {
+function searchCardsBySet() {
     let setName = document.getElementById("setSelector").value;
-
-    requestCardsBySetName(setName)
-}
-
-function requestCardsBySetName(setName) {
     let apiEndpoint = "localhost:8080/api/cards/set-names/"
     let URL = `${apiEndpoint + setName}`;
-    console.log("request")
+    console.log(URL);
+    //FIXME: GET request to local URL is not possible
 
-    loadCards(URL)
-}
 
-function loadCards(URL) {
-    var xhttp = new XMLHttpRequest();
-    console.log(xhttp.readyState)
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            console.log(this.readyState)
-            console.log(this.responseText);
-        }
-    };
-    xhttp.open("GET", URL, true);
-    xhttp.send();
+    axios.get("https://httpbin.org/anything")
+        .then(response => {
+            console.log(`GET response`, response);
+        })
+        .catch(error => console.error(error));
+
 }

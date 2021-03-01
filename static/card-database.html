@@ -43,7 +43,7 @@
     <div class="autocomplete" style="width:300px;">
         <label for="setSelector">Select set:</label>
         <input id="setSelector" type="text" name="mySet" placeholder="Set Name"/>
-        <button onclick="receiveSelected()">Search</button>
+        <button onclick="searchCardsBySet()">Search</button>
     </div>
     <!--End selector block -->
 
@@ -93,10 +93,9 @@
 
 
     <!--Start Script Section -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <script src="js/autocompletion.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="js/selection.js"></script>
+    <script src="js/autocompletion.js"></script>
     <!--End Script Section -->
 
 </body>
