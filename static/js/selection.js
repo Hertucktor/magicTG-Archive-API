@@ -1,9 +1,7 @@
 function searchCardsBySet() {
     let setName = document.getElementById("setSelector").value;
-    let apiEndpoint = "localhost:8080/api/cards/set-names/"
+    let apiEndpoint = "http://localhost:8080/api/cards/set-names/"
     let URL = `${apiEndpoint + setName}`;
-    console.log(URL);
-
 
     axios.get(URL)
         .then(response => {
