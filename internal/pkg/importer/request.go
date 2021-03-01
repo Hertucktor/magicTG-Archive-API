@@ -14,8 +14,8 @@ RequestAllCards receives a response with type *http.Response from
 the mtg api containing 100 cards.
 Returning the response and an error
 */
-func RequestAllCards(page int) (APIResponseForMultipleCards, error) {
-	var response APIResponseForMultipleCards
+func RequestAllCards(page int) (MultipleCards, error) {
+	var response MultipleCards
 	var resp *http.Response
 	var err error
 	var body []byte

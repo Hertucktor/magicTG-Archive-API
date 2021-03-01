@@ -1,12 +1,13 @@
 package importer
 
 import (
+	"context"
 	"github.com/rs/zerolog/log"
+	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/env"
-	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertImportCard(cardInfo Card) error {
+func InsertImportCard(cardInfo Card, client *mongo.Client, ctx context.Context) error {
 	var conf env.Conf
 	var err error
 	cardInfo.Quantity = 1
@@ -16,28 +17,15 @@ func InsertImportCard(cardInfo Card) error {
 		return err
 	}
 
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
 	collection := client.Database(conf.DbName).Collection(conf.DbCollAllCards)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+	log.Info().Timestamp().Msgf("Successful: connected to collection:%v", collection.Name())
 
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", conf.DbCollAllCards, conf.DbName)
 		return err
 	}
-	log.Info().Msgf("Success: insertion result:\n", insertResult)
+	log.Info().Msgf("Success: insertion result: %v", insertResult.InsertedID)
 
 	return err
 }
