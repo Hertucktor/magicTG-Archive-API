@@ -31,7 +31,10 @@ func setupRoutes(){
 	//API Operations for img info
 	img := myRouter.PathPrefix("/img").Subrouter()
 	img.HandleFunc("/set-names/{setName}", returnSingleImg).Methods(http.MethodGet)
-	img.HandleFunc("/upload", uploadImg).Methods(http.MethodPost)
+
+	//Routes for uploads
+	upload := myRouter.PathPrefix("/uploads").Subrouter()
+	upload.HandleFunc("/img", uploadImg).Methods(http.MethodPost)
 
 	//Serve UI
 	staticDir := "/static/"
