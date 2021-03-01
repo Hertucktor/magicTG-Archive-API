@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
@@ -22,10 +21,14 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: problem with reading request requestBody")
+		w.WriteHeader(500)
+		return
 	}
 
 	if err = json.Unmarshal(reqBody, &requestBody);err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
+		w.WriteHeader(500)
+		return
 	}
 
 	client, ctx, cancelCtx, err := mongodb.CreateClient()
@@ -45,6 +48,8 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	//insert into myCards collection
 	if err = InsertCard(cardInfo,"myCards", client, ctx); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert requestBody into db")
+		w.WriteHeader(500)
+		return
 	}
 
 	defer func() {
@@ -66,15 +71,19 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//read all entries out of allCards collection
-	results, err := AllCards("allCards", client, ctx)
+	allCards, err := AllCards("allCards", client, ctx)
 
-	response , err := json.Marshal(results)
+	allCardsBytes, err := json.Marshal(allCards)
 	if err != nil {
 		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
 	}
 
-	if _,err = w.Write(response); err != nil {
+	if _,err = w.Write(allCardsBytes); err != nil {
 		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
 	}
 
 	defer func() {
@@ -108,11 +117,16 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	cardsBySetBytes, err := json.Marshal(cardsBySet)
 	if err != nil {
 		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
 	}
-	w.WriteHeader(200)
+
 	if _,err = w.Write(cardsBySetBytes); err != nil {
 		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
 	}
+	w.WriteHeader(200)
 
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
@@ -144,9 +158,16 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	}
 
 	response, err := json.Marshal(cardResponse)
+	if err != nil {
+		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
+	}
 
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)
+		w.WriteHeader(500)
+		return
 	}
 
 	defer func() {
@@ -171,29 +192,19 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	}
 
 	//reads one entry from myCards collection
-	results, err := SingleCardInfo(setName, number, "myCards", client, ctx)
+	_, err = SingleCardInfo(setName, number, "myCards", client, ctx)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(404)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive reqCard for update single card")
 		return
 	}
 
-	response , err := json.Marshal(results)
-	if err != nil {
-		log.Error().Err(err)
-	}
-
-	if _,err = w.Write(response); err != nil {
-		log.Error().Err(err)
-	}
-
-	if err = json.Unmarshal(response, &card); err != nil {
-		log.Error().Err(err)
-	}
 	//update one entry in myCards collection
 	if err = UpdateSingleCard(setName, number, card.Quantity,"myCards", client, ctx); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
+		w.WriteHeader(500)
+		return
 	}
 
 	defer func() {
@@ -214,14 +225,20 @@ func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
 	}
-	//reads one entry from myCards collection
-	result, err := DeleteSingleCard(setName, number, "myCards", client, ctx)
+	//deletes one entry from myCards collection
+	_, err = DeleteSingleCard(setName, number, "myCards", client, ctx)
 	if err != nil {
 		log.Error().Err(err)
+		w.WriteHeader(500)
 		return
 	}
 
-	_,_ = fmt.Fprint(w, result)
+	w.WriteHeader(200)
+	if _,err = w.Write([]byte("Deletion successful!")); err != nil {
+		log.Error().Err(err)
+		w.WriteHeader(500)
+		return
+	}
 
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
