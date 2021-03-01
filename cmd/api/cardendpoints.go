@@ -28,8 +28,14 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	if err = json.Unmarshal(reqBody, &reqCard);err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't unmarshal reqBody json into article struct")
 	}
+
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
+
 	//read from allCards collection
-	results, err := SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards")
+	results, err := SingleCardInfo(reqCard.SetName, reqCard.Number, "allCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -50,9 +56,16 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err)
 	}
 	//insert into myCards collection
-	if err = InsertCard(card,"myCards"); err != nil {
+	if err = InsertCard(card,"myCards", client, ctx); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert reqCard into db")
 	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
 }
 
 //FIXME: paginate results or db ctx deadline will close connection
@@ -60,8 +73,13 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 
 	log.Info().Msg("Endpoint Hit: returnAllCardEntries")
 
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
+
 	//read all entries out of allCards collection
-	results, err := AllCards("allCards")
+	results, err := AllCards("allCards", client, ctx)
 
 	response , err := json.Marshal(results)
 	if err != nil {
@@ -71,6 +89,13 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)
 	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
 }
 
 func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
@@ -79,8 +104,13 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	setName := vars["setName"]
 
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
+
 	//reads all entries by set name from allCards collection
-	results, err := AllCardsBySet(setName, "allCards")
+	results, err := AllCardsBySet(setName, "allCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -96,6 +126,14 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)
 	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
+
 }
 
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
@@ -105,8 +143,13 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	setName := vars["setName"]
 	number := vars["number"]
 
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
+
 	//reads one entry from myCards collection
-	cardResponse, err := SingleCardInfo(setName, number, "myCards")
+	cardResponse, err := SingleCardInfo(setName, number, "myCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -119,6 +162,13 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	if _,err = w.Write(response); err != nil {
 		log.Error().Timestamp().Err(err)
 	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
 }
 
 func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
@@ -128,8 +178,14 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	setName := vars["setName"]
 	number := vars["number"]
+
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
+
 	//reads one entry from myCards collection
-	results, err := SingleCardInfo(setName, number, "myCards")
+	results, err := SingleCardInfo(setName, number, "myCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -150,9 +206,16 @@ func updateSingleCardEntry(w http.ResponseWriter, r *http.Request){
 		log.Error().Err(err)
 	}
 	//update one entry in myCards collection
-	if err = UpdateSingleCard(setName, number, card.Quantity,"myCards"); err != nil {
+	if err = UpdateSingleCard(setName, number, card.Quantity,"myCards", client, ctx); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't update card entry")
 	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
 }
 
 func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
@@ -160,12 +223,24 @@ func deleteSingleCardEntry(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	setName := vars["setName"]
 	number := vars["number"]
+
+	client, ctx, cancelCtx, err := mongodb.CreateClient()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
+	}
 	//reads one entry from myCards collection
-	result, err := DeleteSingleCard(setName, number, "myCards")
+	result, err := DeleteSingleCard(setName, number, "myCards", client, ctx)
 	if err != nil {
 		log.Error().Err(err)
 		return
 	}
 
 	_,_ = fmt.Fprint(w, result)
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
+		}
+		cancelCtx()
+	}()
 }

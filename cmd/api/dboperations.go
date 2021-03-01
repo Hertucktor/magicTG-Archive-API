@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -8,25 +9,12 @@ import (
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertCard(cardInfo mongodb.Card, dbCollection string) error {
+func InsertCard(cardInfo mongodb.Card, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return err
 	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
@@ -42,7 +30,7 @@ func InsertCard(cardInfo mongodb.Card, dbCollection string) error {
 	return err
 }
 
-func AllCards(dbCollection string) ([]bson.M, error){
+func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([]bson.M, error){
 	var filter = bson.M{}
 	var cards []bson.M
 
@@ -52,19 +40,6 @@ func AllCards(dbCollection string) ([]bson.M, error){
 		return nil, err
 	}
 
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return cards, err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
@@ -89,7 +64,7 @@ func AllCards(dbCollection string) ([]bson.M, error){
 	return cards, err
 }
 
-func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
+func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ctx context.Context)([]bson.M, error){
 	var filter = bson.M{"setname": setName}
 	var cards []bson.M
 
@@ -99,19 +74,6 @@ func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
 		return nil, err
 	}
 
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return cards, err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
@@ -136,7 +98,7 @@ func AllCardsBySet(setName string, dbCollection string)([]bson.M, error){
 	return cards, err
 }
 
-func SingleCardInfo(setName string, number string, dbCollection string) (bson.M, error) {
+func SingleCardInfo(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (bson.M, error) {
 	var readFilter = bson.M{"setname": setName, "number": number}
 	var databaseResponse bson.M
 
@@ -145,18 +107,6 @@ func SingleCardInfo(setName string, number string, dbCollection string) (bson.M,
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return databaseResponse, err
 	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Fatal().Timestamp().Err(err).Msg("Fatal: closing client\n")
-		}
-		cancelCtx()
-	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
@@ -169,7 +119,7 @@ func SingleCardInfo(setName string, number string, dbCollection string) (bson.M,
 	return databaseResponse, err
 }
 
-func DeleteSingleCard(setName string, number string, dbCollection string) (*mongo.DeleteResult, error) {
+func DeleteSingleCard(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (*mongo.DeleteResult, error) {
 	var deleteResult *mongo.DeleteResult
 	var deleteFilter = bson.M{"setname": setName, "number": number}
 	conf, err := env.ReceiveEnvVars()
@@ -177,19 +127,6 @@ func DeleteSingleCard(setName string, number string, dbCollection string) (*mong
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return deleteResult, err
 	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return deleteResult, err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
@@ -205,7 +142,7 @@ func DeleteSingleCard(setName string, number string, dbCollection string) (*mong
 	return deleteResult, err
 }
 
-func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollection string) error {
+func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	var newQuantity = cardQuantity+1
 	var updateFilter = bson.M{"setname": setName, "number":number}
 	var updateSet = bson.D{
@@ -217,19 +154,6 @@ func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollect
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return err
 	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating client\n")
-		return err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
