@@ -19,6 +19,7 @@ func setupRoutes(){
 
 	//CRUD Operations for card info
 	api := myRouter.PathPrefix("/api").Subrouter()
+	api.Use(mux.CORSMethodMiddleware(api), corsOriginMiddleware)
 	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
 	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet) //From allCards Coll
 	api.HandleFunc("/cards/set-names/{setName}", returnAllCardsBySet).Methods(http.MethodGet) //From allCards Coll
@@ -39,4 +40,11 @@ func setupRoutes(){
 	if err := http.ListenAndServe(port, myRouter); err != nil {
 		log.Panic().Timestamp().Err(err).Msg("Panic: problem with TCP network connection")
 	}
+}
+
+func corsOriginMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		next.ServeHTTP(w, r)
+	})
 }
