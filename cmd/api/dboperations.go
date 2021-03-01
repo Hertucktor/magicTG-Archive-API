@@ -128,15 +128,15 @@ func DeleteSingleCard(setName string, number string, dbCollection string, client
 	}
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
+	log.Info().Timestamp().Msgf("Success: created collection:%v", collection)
 
 
 	deleteResult, err = collection.DeleteOne(ctx, deleteFilter)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't delete document with given deleteFilter\n")
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't delete document with given deleteFilter")
 		return deleteResult, err
 	}
-	log.Info().Timestamp().Msgf("Success: Result after successful deletion:\n", deleteResult)
+	log.Info().Timestamp().Msgf("Success: Result after successful deletion:%v", deleteResult)
 
 	return deleteResult, err
 }
