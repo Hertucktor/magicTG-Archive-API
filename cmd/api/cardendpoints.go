@@ -18,7 +18,6 @@ type RequestBody struct {
 func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msg("Endpoint Hit: createNewCardEntry")
 	var requestBody RequestBody
-	var card mongodb.Card
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -35,28 +34,16 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//read from allCards collection
-	results, err := SingleCardInfo(requestBody.SetName, requestBody.Number, "allCards", client, ctx)
+	cardInfo, err := SingleCardInfo(requestBody.SetName, requestBody.Number, "allCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
-		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't receive requestBody for create new entry")
+		log.Error().Timestamp().Err(err).Msgf("Fatal: couldn't receive card set%v with number%v", requestBody.SetName, requestBody.Number)
 		return
 	}
 
-	response , err := json.Marshal(results)
-	if err != nil {
-		log.Error().Err(err)
-	}
-
-	if _,err = w.Write(response); err != nil {
-		log.Error().Err(err)
-	}
-
-	if err = json.Unmarshal(response, &card); err != nil {
-		log.Error().Err(err)
-	}
 	//insert into myCards collection
-	if err = InsertCard(card,"myCards", client, ctx); err != nil {
+	if err = InsertCard(cardInfo,"myCards", client, ctx); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Fatal: couldn't insert requestBody into db")
 	}
 

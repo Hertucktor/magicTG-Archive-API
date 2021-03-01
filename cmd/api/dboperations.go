@@ -30,9 +30,9 @@ func InsertCard(cardInfo mongodb.Card, dbCollection string, client *mongo.Client
 	return err
 }
 
-func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([]bson.M, error){
+func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([]mongodb.Card, error){
 	var filter = bson.M{}
-	var cards []bson.M
+	var cards []mongodb.Card
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -49,17 +49,17 @@ func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([
 		return cards, err
 	}
 
-	defer func() {
-		if err = cursor.Close(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:\n", cursor)
-		}
-		log.Info().Msg("Closed cursor:")
-	}()
-
 	if err = cursor.All(ctx, &cards); err != nil {
 		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
 		return cards, err
 	}
+
+	defer func() {
+		if err = cursor.Close(ctx); err != nil {
+			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:%v", cursor.Current)
+		}
+		log.Info().Timestamp().Msg("Gracefully closed cursor")
+	}()
 
 	return cards, err
 }
@@ -98,25 +98,24 @@ func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ct
 	return cards, err
 }
 
-func SingleCardInfo(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (bson.M, error) {
+func SingleCardInfo(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
 	var readFilter = bson.M{"setname": setName, "number": number}
-	var databaseResponse bson.M
+	var card mongodb.Card
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return databaseResponse, err
+		return card, err
 	}
 
 	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
+	log.Info().Timestamp().Msgf("Success: created collection: %v", collection.Name())
 
-	if err = collection.FindOne(ctx, readFilter).Decode(&databaseResponse); err != nil {
+	if err = collection.FindOne(ctx, readFilter).Decode(&card); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't find single")
 	}
-	log.Info().Timestamp().Msgf("Received single result:", databaseResponse)
 
-	return databaseResponse, err
+	return card, err
 }
 
 func DeleteSingleCard(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (*mongo.DeleteResult, error) {
