@@ -5,10 +5,9 @@ function searchCardsBySet() {
     console.log(URL);
 
 
-    axios.get("https://httpbin.org/anything")
+    axios.get(URL)
         .then(response => {
             console.log(`GET response`, response);
         })
         .catch(error => console.error(error));
-
 }
