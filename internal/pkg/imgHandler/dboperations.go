@@ -3,105 +3,24 @@ package imgHandler
 import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"magicTGArchive/internal/pkg/env"
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertSetImg(imgInfo Img, dbCollection string) error {
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
-
-	insertResult, err := collection.InsertOne(ctx, imgInfo)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, conf.DbName)
-		return err
-	}
-
-	log.Info().Msgf("Success: insertion result:\n", insertResult)
-
-	return err
+type databaseResponse struct {
+	ID string `bson:"_id"`
+	ImgLink string `bson:"imglink"`
+	SetName string `bson:"setname"`
 }
 
-func AllSetImgs(dbCollection string) ([]bson.M, error){
-	var filter = bson.M{}
-	var card bson.M
-	var cards []bson.M
-
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return nil, err
-	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return cards, err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
-
-	cursor, err := collection.Find(ctx, filter)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: ")
-		return cards, err
-	}
-
-	defer func() {
-		if err = cursor.Close(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:\n", cursor)
-		}
-		log.Info().Msg("Closed cursor:")
-	}()
-
-	for cursor.Next(ctx) {
-
-		if err = cursor.Decode(&card); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
-			return cards, err
-		}
-		cards = append(cards, card)
-	}
-
-	return cards, err
-}
-
-func SingleSetImg(setName string, dbCollection string) (bson.M, error) {
-	var databaseResponse bson.M
+func SingleSetImg(setName string, dbCollection string) (databaseResponse, error) {
+	var dbresp databaseResponse
 	var readFilter = bson.M{"setname": setName}
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return databaseResponse, err
+		return dbresp, err
 	}
 
 	client, ctx, cancelCtx, err := mongodb.CreateClient()
@@ -119,84 +38,9 @@ func SingleSetImg(setName string, dbCollection string) (bson.M, error) {
 	collection := client.Database(conf.DbName).Collection(dbCollection)
 	log.Info().Timestamp().Msgf("Success: created collection:\n", collection.Name())
 
-	if err = collection.FindOne(ctx, readFilter).Decode(&databaseResponse); err != nil {
+	if err = collection.FindOne(ctx, readFilter).Decode(&dbresp); err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't find document")
 	}
 
-	return databaseResponse, err
-}
-
-func DeleteSetImg(setName string, dbCollection string) (*mongo.DeleteResult, error) {
-	var deleteResult *mongo.DeleteResult
-	var deleteFilter = bson.M{"setname": setName}
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return deleteResult, err
-	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
-		return deleteResult, err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
-
-
-	deleteResult, err = collection.DeleteOne(ctx, deleteFilter)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't delete document with given deleteFilter\n")
-		return deleteResult, err
-	}
-	log.Info().Timestamp().Msgf("Success: Result after successful deletion:\n", deleteResult)
-
-	return deleteResult, err
-}
-
-func UpdateSetImg(setName string, picName string, dbCollection string) error {
-	var updateFilter = bson.M{"setname": setName}
-	var updateSet = bson.D{
-		{"$set", bson.D{{"quantity", picName}}},
-	}
-
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
-
-	client, ctx, cancelCtx, err := mongodb.CreateClient()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating client\n")
-		return err
-	}
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msg("Error: closing client\n")
-		}
-		cancelCtx()
-	}()
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
-
-	updateResult, err := collection.UpdateOne(ctx, updateFilter, updateSet)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: updating the quantity of a card in collection of db:\n", dbCollection, conf.DbName)
-		return err
-	}
-
-	log.Info().Timestamp().Msgf("Success: Updated Documents!\n", updateResult)
-
-	return err
+	return dbresp, err
 }

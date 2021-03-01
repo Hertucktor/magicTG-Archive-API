@@ -39,7 +39,7 @@ func createNewCardEntry(w http.ResponseWriter, r *http.Request) {
 	//read from allCards collection
 	cardInfo, err := SingleCardInfo(requestBody.SetName, requestBody.Number, "allCards", client, ctx)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(400)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
 		log.Error().Timestamp().Err(err).Msgf("Fatal: couldn't receive card set%v with number%v", requestBody.SetName, requestBody.Number)
 		return
@@ -72,6 +72,12 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 
 	//read all entries out of allCards collection
 	allCards, err := AllCards("allCards", client, ctx)
+	if err != nil {
+		w.WriteHeader(400)
+		_,_ = w.Write([]byte("The cards you requested are not in storage"))
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive cards")
+		return
+	}
 
 	allCardsBytes, err := json.Marshal(allCards)
 	if err != nil {
@@ -108,9 +114,9 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	//reads all entries by set name from allCards collection
 	cardsBySet, err := AllCardsBySet(setName, "allCards", client, ctx)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		_,_ = w.Write([]byte("The card you requested is not in storage"))
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive reqCard for return single card")
+		w.WriteHeader(400)
+		_,_ = w.Write([]byte("The cards you requested are not in storage"))
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't return cards from set: %v",setName)
 		return
 	}
 
@@ -151,7 +157,7 @@ func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){
 	//reads one entry from myCards collection
 	cardResponse, err := SingleCardInfo(setName, number, "myCards", client, ctx)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(400)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive reqCard for return single card")
 		return
