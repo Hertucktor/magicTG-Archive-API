@@ -97,7 +97,7 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 	}
 
 	//reads all entries by set name from allCards collection
-	results, err := AllCardsBySet(setName, "allCards", client, ctx)
+	cardsBySet, err := AllCardsBySet(setName, "allCards", client, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_,_ = w.Write([]byte("The card you requested is not in storage"))
@@ -105,12 +105,12 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	response , err := json.Marshal(results)
+	cardsBySetBytes, err := json.Marshal(cardsBySet)
 	if err != nil {
 		log.Error().Timestamp().Err(err)
 	}
 	w.WriteHeader(200)
-	if _,err = w.Write(response); err != nil {
+	if _,err = w.Write(cardsBySetBytes); err != nil {
 		log.Error().Timestamp().Err(err)
 	}
 
@@ -120,7 +120,6 @@ func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
 		}
 		cancelCtx()
 	}()
-
 }
 
 func returnSingleCardEntry(w http.ResponseWriter, r *http.Request){

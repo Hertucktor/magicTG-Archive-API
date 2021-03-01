@@ -64,9 +64,9 @@ func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([
 	return cards, err
 }
 
-func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ctx context.Context)([]bson.M, error){
+func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
 	var filter = bson.M{"setname": setName}
-	var cards []bson.M
+	var cards []mongodb.Card
 
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -83,17 +83,17 @@ func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ct
 		return cards, err
 	}
 
-	defer func() {
-		if err = cursor.Close(ctx); err != nil {
-			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:\n", cursor)
-		}
-		log.Info().Msg("Closed cursor:")
-	}()
-
 	if err = cursor.All(ctx, &cards); err != nil {
 		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
 		return cards, err
 	}
+
+	defer func() {
+		if err = cursor.Close(ctx); err != nil {
+			log.Error().Timestamp().Err(err).Msgf("Error: couldn't close cursor:%v", cursor.Current)
+		}
+		log.Info().Msg("Gracefully closed cursor")
+	}()
 
 	return cards, err
 }
