@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"magicTGArchive/internal/pkg/env"
-	"magicTGArchive/internal/pkg/importer"
 )
 
 
@@ -20,13 +19,13 @@ func main() {
 	}
 
 	for delimiter != 0{
-		requestAllCards, err := importer.RequestAllCards(page)
+		requestAllCards, err := RequestAllCards(page)
 		if err != nil {
 			log.Fatal().Timestamp().Err(err).Msg("Fatal: API Request threw error")
 		}
 
 		for _, card := range requestAllCards.Cards{
-			if err = importer.InsertImportCard(card, client, ctx); err != nil {
+			if err = InsertImportCard(card, client, ctx); err != nil {
 				log.Fatal().Timestamp().Err(err).Msgf("Error: couldn't insert dataset:\n",card)
 			}
 		}

@@ -1,4 +1,4 @@
-package importer
+package main
 
 type MultipleCards struct {
 	Cards []Card `json:"cards"`
@@ -25,7 +25,7 @@ type Card struct {
 	Layout        string         `json:"layout,omitempty"`
 	Multiverseid  int            `json:"multiverseID,omitempty"`
 	ImageURL      string         `json:"imageURL,omitempty"`
-	Rulings       []Rulings  	 `json:"rulings,omitempty"`
+	Rulings       []Rulings      `json:"rulings,omitempty"`
 	ForeignNames  []ForeignNames `json:"foreignNames,omitempty"`
 	Printings     []string       `json:"printings,omitempty"`
 	OriginalText  string         `json:"originalText,omitempty"`
@@ -33,7 +33,7 @@ type Card struct {
 	Legalities    []Legalities   `json:"legalities,omitempty"`
 	ID            string         `json:"id,omitempty"`
 	Variations    []string       `json:"variations,omitempty"`
-	Quantity	  int 			 `json:"quantity"`
+	Quantity	  int            `json:"quantity"`
 }
 type Rulings struct {
 	Date string `json:"date"`

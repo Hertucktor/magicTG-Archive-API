@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
-	"magicTGArchive/internal/pkg/imgHandler"
 	"magicTGArchive/internal/pkg/mongodb"
 	"net/http"
 )
@@ -21,7 +20,7 @@ func returnSingleImg(w http.ResponseWriter, r *http.Request) {
 		log.Error().Timestamp().Err(err).Msg("Error: creating client\n")
 	}
 
-	imgInfo, err := imgHandler.SingleSetImg(setName, dbCollName, client, ctx)
+	imgInfo, err := SingleSetImg(setName, dbCollName, client, ctx)
 	if err != nil {
 		log.Error().Timestamp().Err(err)
 		w.WriteHeader(400)

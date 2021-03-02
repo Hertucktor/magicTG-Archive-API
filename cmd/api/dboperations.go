@@ -9,6 +9,13 @@ import (
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
+type Img struct {
+	ID string `json:"id" bson:"_id"`
+	ImgLink string `json:"imgLink" bson:"imglink"`
+	SetName string `json:"setName" bson:"setname"`
+}
+
+//CRUD OPERATIONS FOR CARD
 func InsertCard(cardInfo mongodb.Card, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
@@ -166,4 +173,25 @@ func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollect
 	log.Info().Timestamp().Msgf("Success: Updated Documents!\n", updateResult)
 
 	return err
+}
+
+//CRUD OPERATIONS FOR IMAGE
+func SingleSetImg(setName string, dbCollection string, client *mongo.Client, ctx context.Context) (Img, error) {
+	var readFilter = bson.M{"setname": setName}
+	var imgInfo Img
+
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
+		return imgInfo, err
+	}
+
+	collection := client.Database(conf.DbName).Collection(dbCollection)
+	log.Info().Timestamp().Msgf("Success: created collection: %v", collection.Name())
+
+	if err = collection.FindOne(ctx, readFilter).Decode(&imgInfo); err != nil {
+		log.Error().Timestamp().Err(err).Msg("Error: couldn't find document")
+	}
+
+	return imgInfo, err
 }
