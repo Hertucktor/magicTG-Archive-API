@@ -72,7 +72,7 @@ func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([
 }
 
 func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
-	var filter = bson.M{"setname": setName}
+	var filter = bson.M{"setName": setName}
 	var cards []mongodb.Card
 
 	conf, err := env.ReceiveEnvVars()
@@ -106,7 +106,7 @@ func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ct
 }
 
 func SingleCardInfo(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
-	var readFilter = bson.M{"setname": setName, "number": number}
+	var readFilter = bson.M{"setName": setName, "number": number}
 	var card mongodb.Card
 
 	conf, err := env.ReceiveEnvVars()
@@ -127,7 +127,7 @@ func SingleCardInfo(setName string, number string, dbCollection string, client *
 
 func DeleteSingleCard(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (*mongo.DeleteResult, error) {
 	var deleteResult *mongo.DeleteResult
-	var deleteFilter = bson.M{"setname": setName, "number": number}
+	var deleteFilter = bson.M{"setName": setName, "number": number}
 	conf, err := env.ReceiveEnvVars()
 	if err != nil {
 		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
@@ -150,7 +150,7 @@ func DeleteSingleCard(setName string, number string, dbCollection string, client
 
 func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	var newQuantity = cardQuantity+1
-	var updateFilter = bson.M{"setname": setName, "number":number}
+	var updateFilter = bson.M{"setName": setName, "number":number}
 	var updateSet = bson.D{
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
@@ -177,7 +177,7 @@ func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollect
 
 //CRUD OPERATIONS FOR IMAGE
 func SingleSetImg(setName string, dbCollection string, client *mongo.Client, ctx context.Context) (Img, error) {
-	var readFilter = bson.M{"setname": setName}
+	var readFilter = bson.M{"setName": setName}
 	var imgInfo Img
 
 	conf, err := env.ReceiveEnvVars()

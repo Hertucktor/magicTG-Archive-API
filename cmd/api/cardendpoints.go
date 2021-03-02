@@ -101,7 +101,7 @@ func returnAllCardEntries(w http.ResponseWriter, r *http.Request) {
 }
 
 func returnAllCardsBySet(w http.ResponseWriter, r *http.Request){
-	log.Info().Msg("Endpoint Hit: returnSingleCardEntry")
+	log.Info().Msg("Endpoint Hit: returnAllCardsBySet")
 
 	vars := mux.Vars(r)
 	setName := vars["setName"]
