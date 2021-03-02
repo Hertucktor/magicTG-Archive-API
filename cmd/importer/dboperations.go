@@ -41,7 +41,7 @@ func FindCard (setName string, number string, client *mongo.Client, ctx context.
 
 	return false, nil
 }
-
+//FIXME: update complete dataset plus modified
 func UpdateSingleCard(card Card, setName string, number string, client *mongo.Client, ctx context.Context, conf env.Conf) error {
 	opts := options.Update().SetUpsert(true)
 	filter := bson.M{"setName": setName, "number":number}
