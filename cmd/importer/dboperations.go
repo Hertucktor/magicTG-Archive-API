@@ -7,6 +7,7 @@ import (
 	"magicTGArchive/internal/pkg/env"
 )
 
+//FIXME: UPSERT
 func InsertImportCard(cardInfo Card, client *mongo.Client, ctx context.Context) error {
 	var conf env.Conf
 	var err error
