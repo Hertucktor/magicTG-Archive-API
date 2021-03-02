@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"magicTGArchive/internal/pkg/env"
+	"time"
 )
 
 
@@ -23,6 +24,7 @@ func main() {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive env vars")
 	}
 
+	log.Info().Msgf("Start of import: %v", time.Now().Unix())
 	for delimiter != 0{
 		requestAllCards, err := RequestAllCards(page)
 		if err != nil {
@@ -46,9 +48,25 @@ func main() {
 			}
 		}
 		page++
+		if page == 100 {
+			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+		}
+		if page == 200 {
+			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+		}
+		if page == 300 {
+			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+		}
+		if page == 400 {
+			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+		}
+		if page == 500 {
+			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+		}
 		log.Info().Timestamp().Msgf("Request page number:%v one page = 100 cards", page)
 		delimiter = len(requestAllCards.Cards)
 	}
+	log.Info().Msgf("End of import: %v", time.Now().Unix())
 }
 
 func ImporterClient() (*mongo.Client, context.Context, error) {
