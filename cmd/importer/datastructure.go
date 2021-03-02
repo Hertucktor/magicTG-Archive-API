@@ -23,7 +23,7 @@ type Card struct {
 	Power         string         `json:"power,omitempty"`
 	Toughness     string         `json:"toughness,omitempty"`
 	Layout        string         `json:"layout,omitempty"`
-	Multiverseid  int            `json:"multiverseID,omitempty"`
+	Multiverseid  string            `json:"multiverseID,omitempty"`
 	ImageURL      string         `json:"imageURL,omitempty"`
 	Rulings       []Rulings      `json:"rulings,omitempty"`
 	ForeignNames  []ForeignNames `json:"foreignNames,omitempty"`

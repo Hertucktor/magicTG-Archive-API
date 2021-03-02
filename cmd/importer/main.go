@@ -10,7 +10,7 @@ import (
 
 
 func main() {
-	var page int
+	var page = 1
 	var delimiter = 1
 
 	client, ctx, err := ImporterClient()
