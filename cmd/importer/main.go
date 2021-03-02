@@ -18,6 +18,11 @@ func main() {
 		log.Fatal().Timestamp().Err(err)
 	}
 
+	conf, err := env.ReceiveEnvVars()
+	if err != nil {
+		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive env vars")
+	}
+
 	for delimiter != 0{
 		requestAllCards, err := RequestAllCards(page)
 		if err != nil {
@@ -25,12 +30,23 @@ func main() {
 		}
 
 		for _, card := range requestAllCards.Cards{
-			if err = InsertImportCard(card, client, ctx); err != nil {
-				log.Fatal().Timestamp().Err(err).Msgf("Error: couldn't insert dataset:\n",card)
+			//If Card is in Database, update modified else insert card
+			found, err := FindCard(card.SetName, card.Number, client, ctx, conf)
+			if err != nil {
+				log.Fatal().Timestamp().Err(err).Msgf("Fatal: problem reading card from database: %v",card)
+			}
+			if found != true{
+				if err = InsertImportCard(card, client, ctx, conf); err != nil {
+					log.Fatal().Timestamp().Err(err).Msgf("Fatal: couldn't insert dataset: %v",card)
+				}
+			}else {
+				if err = UpdateSingleCard(card, card.SetName, card.Number, client, ctx, conf); err != nil{
+					log.Fatal().Timestamp().Err(err).Msgf("Fatal: couldn't update dataset:\n",card)
+				}
 			}
 		}
 		page++
-		log.Info().Timestamp().Msgf("", page)
+		log.Info().Timestamp().Msgf("Request page number:%v one page = 100 cards", page)
 		delimiter = len(requestAllCards.Cards)
 	}
 }
