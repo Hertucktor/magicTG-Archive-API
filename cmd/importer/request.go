@@ -35,7 +35,7 @@ func RequestAllCards(page int) (mongodb.MultipleCards, error) {
 	}()
 	//checks if there is an http status code other than 200 in the response
 	if resp.StatusCode != 200{
-		err = errors.New("Http statuscode != 200")
+		err = errors.New("http statuscode != 200")
 		log.Error().Timestamp().Err(err).Msgf("Error: Http status code:\n", resp.StatusCode)
 		return response, err
 	}
