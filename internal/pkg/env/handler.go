@@ -5,6 +5,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Conf struct {
+	DbUser string
+	DbPass string
+	DbPort string
+	DbName string
+	DbCollAllCards string
+	DbCollMyCards string
+	DbCollSetImages string
+}
+
 func ReceiveEnvVars() (Conf, error) {
 	var err error
 	viper.SetConfigFile(".env")
