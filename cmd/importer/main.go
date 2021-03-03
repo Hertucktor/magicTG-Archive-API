@@ -25,6 +25,7 @@ func main() {
 	}
 
 	log.Info().Msgf("Start of import: %v", time.Now().Unix())
+
 	for delimiter != 0{
 		requestAllCards, err := RequestAllCards(page)
 		if err != nil {
@@ -47,26 +48,35 @@ func main() {
 				}
 			}
 		}
+
+		pageImpression(page)
+		//increments page counter for paginated api request by 1
 		page++
-		if page == 100 {
-			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
-		}
-		if page == 200 {
-			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
-		}
-		if page == 300 {
-			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
-		}
-		if page == 400 {
-			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
-		}
-		if page == 500 {
-			log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
-		}
-		log.Info().Timestamp().Msgf("Request page number:%v one page = 100 cards", page)
+		//when requestAllCards.Cards == empty/0 the import is completed
 		delimiter = len(requestAllCards.Cards)
 	}
 	log.Info().Msgf("End of import: %v", time.Now().Unix())
+}
+
+/*
+pageImpression logs the current iteration of the page counter
+used in func RequestAllCards
+ */
+func pageImpression(page int){
+	switch page {
+	case 100:
+		log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+	case 200:
+		log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+	case 300:
+		log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+	case 400:
+		log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+	case 500:
+		log.Info().Msgf("Reached page: %v, at time: %v",page, time.Now().Unix())
+	default:
+		log.Info().Timestamp().Msgf("Request page number:%v one page = 100 cards", page)
+	}
 }
 
 func ImporterClient() (*mongo.Client, context.Context, error) {
