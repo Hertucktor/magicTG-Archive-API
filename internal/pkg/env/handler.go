@@ -6,13 +6,13 @@ import (
 )
 
 type Conf struct {
-	DbUser string
-	DbPass string
-	DbPort string
-	DbName string
+	DbUser         string
+	DbPass         string
+	DbPort         string
+	DbName         string
 	DbCollAllCards string
-	DbCollMyCards string
-	DbCollSetImages string
+	DbCollMyCards  string
+	DbCollImgInfo  string
 }
 
 func ReceiveEnvVars() (Conf, error) {
@@ -25,13 +25,13 @@ func ReceiveEnvVars() (Conf, error) {
 	}
 
 	conf := Conf{
-		DbUser: viper.Get("DB_USER").(string),
-		DbPass: viper.Get("DB_PASS").(string),
-		DbPort: viper.Get("DB_PORT").(string),
-		DbName: viper.Get("DB_NAME").(string),
+		DbUser:         viper.Get("DB_USER").(string),
+		DbPass:         viper.Get("DB_PASS").(string),
+		DbPort:         viper.Get("DB_PORT").(string),
+		DbName:         viper.Get("DB_NAME").(string),
 		DbCollAllCards: viper.Get("DB_COLLECTION_ALLCARDS").(string),
-		DbCollMyCards: viper.Get("DB_COLLECTION_ALLCARDS").(string),
-		DbCollSetImages: viper.Get("DB_COLLECTION_ALLCARDS").(string),
+		DbCollMyCards:  viper.Get("DB_COLLECTION_ALLCARDS").(string),
+		DbCollImgInfo:  viper.Get("DB_COLLECTION_ALLCARDS").(string),
 	}
 
 	return conf, err

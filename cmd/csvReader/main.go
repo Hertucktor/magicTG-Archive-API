@@ -23,7 +23,7 @@ func main() {
 	}
 
 	for _, imgInfo := range imgInfos.Imgs{
-		if err := InsertImgInfo(imgInfo, envVars.DbCollSetImages); err != nil {
+		if err := InsertImgInfo(imgInfo, envVars.DbCollImgInfo); err != nil {
 			log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
 		}
 	}
