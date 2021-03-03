@@ -7,10 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/mongodb"
 	"time"
 )
 
-func InsertImportCard(cardInfo Card, client *mongo.Client, ctx context.Context, conf env.Conf) error {
+func InsertImportCard(cardInfo mongodb.Card, client *mongo.Client, ctx context.Context, conf env.Conf) error {
 	cardInfo.Quantity = 1
 	cardInfo.Created = time.Now().String()
 
@@ -29,7 +30,7 @@ func InsertImportCard(cardInfo Card, client *mongo.Client, ctx context.Context, 
 
 func FindCard (setName string, number string, client *mongo.Client, ctx context.Context, conf env.Conf) (bool, error) {
 	var readFilter = bson.M{"setName": setName, "number": number}
-	var card Card
+	var card mongodb.Card
 
 	collection := client.Database(conf.DbName).Collection("allCards")
 
@@ -42,7 +43,7 @@ func FindCard (setName string, number string, client *mongo.Client, ctx context.
 	return false, nil
 }
 //FIXME: update complete dataset plus modified
-func UpdateSingleCard(card Card, setName string, number string, client *mongo.Client, ctx context.Context, conf env.Conf) error {
+func UpdateSingleCard(card mongodb.Card, setName string, number string, client *mongo.Client, ctx context.Context, conf env.Conf) error {
 	opts := options.Update().SetUpsert(true)
 	filter := bson.M{"setName": setName, "number":number}
 	modifiedDate := time.Now().String()

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"magicTGArchive/internal/pkg/mongodb"
 	"net/http"
 	"strconv"
 )
@@ -14,8 +15,8 @@ RequestAllCards receives a response with type *http.Response from
 the mtg api containing 100 cards.
 Returning the response and an error
 */
-func RequestAllCards(page int) (MultipleCards, error) {
-	var response MultipleCards
+func RequestAllCards(page int) (mongodb.MultipleCards, error) {
+	var response mongodb.MultipleCards
 	var resp *http.Response
 	var err error
 	var body []byte
