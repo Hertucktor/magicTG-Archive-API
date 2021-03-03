@@ -22,7 +22,7 @@ func ReadCSV(fileName string) ([][]string, error){
 	return records,err
 }
 
-func ConvertCSVEntriesIntoStruct() (ImgCollection, error){
+func ConvertCSVEntriesIntoStruct(filePath string) (ImgCollection, error){
 	var img Img
 	var imgColl ImgCollection
 

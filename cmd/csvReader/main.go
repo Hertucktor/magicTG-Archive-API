@@ -2,10 +2,8 @@ package main
 
 import (
 	"github.com/rs/zerolog/log"
+	"magicTGArchive/internal/pkg/env"
 )
-
-var dbCollName = "imgInfo"
-var filePath = "./csv/mtgSetIcons.csv"
 
 type ImgCollection struct {
 	Imgs []Img
@@ -16,13 +14,16 @@ type Img struct {
 }
 
 func main() {
-	imgInfos, err := ConvertCSVEntriesIntoStruct()
+	var filePath = "./csv/mtgSetIcons.csv"
+	envVars, err := env.ReceiveEnvVars()
+
+	imgInfos, err := ConvertCSVEntriesIntoStruct(filePath)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't ")
 	}
 
 	for _, imgInfo := range imgInfos.Imgs{
-		if err := InsertImgInfo(imgInfo, dbCollName); err != nil {
+		if err := InsertImgInfo(imgInfo, envVars.DbCollSetImages); err != nil {
 			log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
 		}
 	}
