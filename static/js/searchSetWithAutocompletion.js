@@ -1,3 +1,32 @@
+var setNames;
+axios.get("http://localhost:8080/api/cards/set-names")
+    .then(function (response) {
+        let setNames = response.data;
+        console.log(setNames);
+        //autocomplete(document.getElementById("setSelector"), setNames);
+    })
+    .catch(function (error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+        }
+        console.log(error.config);
+    });
+
+/*initiate the autocomplete function on the "setSelector" element, and pass along the setNames array as possible autocomplete values:*/
+autocomplete(document.getElementById("setSelector"), setNames);
+
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
@@ -94,11 +123,3 @@ function autocomplete(inp, arr) {
         closeAllLists(e.target);
     });
 }
-
-/*  An array containing all the country names in the world:
-*   FIXME: Get this array from internal api
-*/
-var setNames = ["Tenth Edition","Aether Revolt"];
-
-/*initiate the autocomplete function on the "setSelector" element, and pass along the setNames array as possible autocomplete values:*/
-autocomplete(document.getElementById("setSelector"), setNames);
