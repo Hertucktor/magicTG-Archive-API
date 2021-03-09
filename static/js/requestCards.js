@@ -60,6 +60,7 @@ function sortCards(cards) {
     });
 }
 
+/*
 function updateDisplay(card) {
 
-}
+}*/

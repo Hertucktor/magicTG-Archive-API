@@ -1,8 +1,9 @@
-var setNames;
+
 axios.get("http://localhost:8080/api/cards/set-names")
     .then(function (response) {
         let setNames = response.data;
         console.log(setNames);
+        autocomplete(document.getElementById("setSelector"), setNames);
         //autocomplete(document.getElementById("setSelector"), setNames);
     })
     .catch(function (error) {
@@ -25,7 +26,7 @@ axios.get("http://localhost:8080/api/cards/set-names")
     });
 
 /*initiate the autocomplete function on the "setSelector" element, and pass along the setNames array as possible autocomplete values:*/
-autocomplete(document.getElementById("setSelector"), setNames);
+//autocomplete(document.getElementById("setSelector"), setNames);
 
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
