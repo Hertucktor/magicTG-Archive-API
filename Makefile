@@ -7,6 +7,9 @@ csvReader:
 importer:
 	go build -o bin/importer --mod=vendor ./cmd/importer ;\
     ./bin/importer
+setNames:
+	go build -o bin/setNames --mod=vendor ./cmd/setNames ;\
+    ./bin/setNames
 api:
 	go build -o bin/api --mod=vendor ./cmd/api ;\
     ./bin/api
