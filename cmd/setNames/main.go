@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type setNameInfo struct {
+type SetNameInfo struct {
 	SetName  []string `json:"setName" bson:"setName"`
 	Created  string   `json:"created" bson:"created"`
 	Modified string   `json:"modified" bson:"modified"`
@@ -114,7 +114,7 @@ func insertSetNames(setNames []string, client *mongo.Client, ctx context.Context
 		return err
 	}
 
-	var newSetNames = setNameInfo{
+	var newSetNames = SetNameInfo{
 		SetName:  setNames,
 		Created:  time.Now().String(),
 		Modified: "",
