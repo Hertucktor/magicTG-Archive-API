@@ -5,7 +5,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"magicTGArchive/internal/pkg/env"
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
@@ -15,20 +14,11 @@ type Img struct {
 	SetName string `json:"setName" bson:"setname"`
 }
 
-//CRUD OPERATIONS FOR CARD
-func InsertCard(cardInfo mongodb.Card, dbCollection string, client *mongo.Client, ctx context.Context) error {
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+func InsertCard(cardInfo mongodb.Card,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) error {
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	insertResult, err := collection.InsertOne(ctx, cardInfo)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, conf.DbName)
 		return err
 	}
 
@@ -37,27 +27,18 @@ func InsertCard(cardInfo mongodb.Card, dbCollection string, client *mongo.Client
 	return err
 }
 
-func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([]mongodb.Card, error){
+func AllCards(dbName string, dbCollection string, client *mongo.Client, ctx context.Context) ([]mongodb.Card, error){
 	var filter = bson.M{}
 	var cards []mongodb.Card
 
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return nil, err
-	}
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: ")
 		return cards, err
 	}
 
 	if err = cursor.All(ctx, &cards); err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
 		return cards, err
 	}
 
@@ -71,27 +52,18 @@ func AllCards(dbCollection string, client *mongo.Client, ctx context.Context) ([
 	return cards, err
 }
 
-func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
+func AllCardsBySet(setName string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
 	var filter = bson.M{"setName": setName}
 	var cards []mongodb.Card
 
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return nil, err
-	}
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: ")
 		return cards, err
 	}
 
 	if err = cursor.All(ctx, &cards); err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't decode data into interface:\n")
 		return cards, err
 	}
 
@@ -105,68 +77,45 @@ func AllCardsBySet(setName string, dbCollection string, client *mongo.Client, ct
 	return cards, err
 }
 
-func SingleCardInfo(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
+func SingleCardInfo(setName string, number string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
 	var readFilter = bson.M{"setName": setName, "number": number}
 	var card mongodb.Card
 
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return card, err
+	collection := client.Database(dbName).Collection(dbCollection)
+
+	if err := collection.FindOne(ctx, readFilter).Decode(&card); err != nil {
+		return mongodb.Card{}, err
 	}
 
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection: %v", collection.Name())
-
-	if err = collection.FindOne(ctx, readFilter).Decode(&card); err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't find single")
-	}
-
-	return card, err
+	return card, nil
 }
 
-func DeleteSingleCard(setName string, number string, dbCollection string, client *mongo.Client, ctx context.Context) (*mongo.DeleteResult, error) {
-	var deleteResult *mongo.DeleteResult
+func DeleteSingleCard(setName string, number string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) (*mongo.DeleteResult, error) {
 	var deleteFilter = bson.M{"setName": setName, "number": number}
-	conf, err := env.ReceiveEnvVars()
+
+	collection := client.Database(dbName).Collection(dbCollection)
+
+	deleteResult, err := collection.DeleteOne(ctx, deleteFilter)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
 		return deleteResult, err
 	}
 
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:%v", collection)
-
-
-	deleteResult, err = collection.DeleteOne(ctx, deleteFilter)
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't delete document with given deleteFilter")
-		return deleteResult, err
-	}
 	log.Info().Timestamp().Msgf("Success: Result after successful deletion:%v", deleteResult)
 
 	return deleteResult, err
 }
 
-func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollection string, client *mongo.Client, ctx context.Context) error {
+func UpdateSingleCard(setName string, number string, cardQuantity int,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	var newQuantity = cardQuantity+1
 	var updateFilter = bson.M{"setName": setName, "number":number}
 	var updateSet = bson.D{
 		{"$set", bson.D{{"quantity", newQuantity}}},
 	}
 
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
-
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection:\n", collection)
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	updateResult, err := collection.UpdateOne(ctx, updateFilter, updateSet)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: updating the quantity of a card in collection of db:\n", dbCollection, conf.DbName)
 		return err
 	}
 
@@ -176,22 +125,15 @@ func UpdateSingleCard(setName string, number string, cardQuantity int, dbCollect
 }
 
 //CRUD OPERATIONS FOR IMAGE
-func SingleSetImg(setName string, dbCollection string, client *mongo.Client, ctx context.Context) (Img, error) {
+func SingleSetImg(setName string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) (Img, error) {
 	var readFilter = bson.M{"setName": setName}
 	var imgInfo Img
 
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return imgInfo, err
+	collection := client.Database(dbName).Collection(dbCollection)
+
+	if err := collection.FindOne(ctx, readFilter).Decode(&imgInfo); err != nil {
+		return Img{}, err
 	}
 
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Success: created collection: %v", collection.Name())
-
-	if err = collection.FindOne(ctx, readFilter).Decode(&imgInfo); err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't find document")
-	}
-
-	return imgInfo, err
+	return imgInfo, nil
 }

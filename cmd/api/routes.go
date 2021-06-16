@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/config"
 	"net/http"
 )
 
@@ -63,7 +63,7 @@ func setupRoutes(){
 func returnAllSetName(w http.ResponseWriter, r *http.Request){
 	log.Info().Msg("Endpoint Hit: returnAllCardsBySet")
 
-	conf, err := env.ReceiveEnvVars()
+	conf, err := config.GetConfig("config.yml")
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive env vars")
 	}
@@ -97,9 +97,9 @@ func returnAllSetName(w http.ResponseWriter, r *http.Request){
 
 }
 
-func allSetNames(client *mongo.Client, ctx context.Context, conf env.Conf) SetNameInfo {
+func allSetNames(client *mongo.Client, ctx context.Context, conf config.Config) SetNameInfo {
 	var setNameInfo SetNameInfo
-	collection := client.Database(conf.DbName).Collection("setNames")
+	collection := client.Database(conf.DBName).Collection("setNames")
 
 	result := collection.FindOne(ctx, bson.M{}).Decode(&setNameInfo)
 	fmt.Println(result)
@@ -109,9 +109,9 @@ func allSetNames(client *mongo.Client, ctx context.Context, conf env.Conf) SetNa
 	return setNameInfo
 }
 
-func buildClient(conf env.Conf)(*mongo.Client, context.Context, error){
+func buildClient(conf config.Config)(*mongo.Client, context.Context, error){
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DbUser+":"+conf.DbPass+"@"+conf.DbPort+"/"+conf.DbName))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DBUser+":"+conf.DBPass+"@"+conf.DBPort+"/"+conf.DBName))
 	if err != nil {
 		log.Error().Err(err)
 		return client, nil, err

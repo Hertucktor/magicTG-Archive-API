@@ -2,20 +2,12 @@ package main
 
 import (
 	"github.com/rs/zerolog/log"
-	"magicTGArchive/internal/pkg/env"
 	"magicTGArchive/internal/pkg/mongodb"
 )
 
-func InsertImgInfo(imgInfo Img, dbCollection string) error {
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
-
+func InsertImgInfo(imgInfo Img, dbName string, dbCollection string) error {
 	client, ctx, cancelCtx, err := mongodb.CreateClient()
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: Creating Client\n")
 		return err
 	}
 
@@ -26,12 +18,10 @@ func InsertImgInfo(imgInfo Img, dbCollection string) error {
 		cancelCtx()
 	}()
 
-	collection := client.Database(conf.DbName).Collection(dbCollection)
-	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
+	collection := client.Database(dbName).Collection(dbCollection)
 
 	insertResult, err := collection.InsertOne(ctx, imgInfo)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db:\n", dbCollection, conf.DbName)
 		return err
 	}
 

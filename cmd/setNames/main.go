@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/config"
 	"magicTGArchive/internal/pkg/mongodb"
 	"time"
 )
@@ -18,13 +18,14 @@ type SetNameInfo struct {
 }
 
 func main() {
-	returnAllSetName()
+	configFile := "config.yml"
+	returnAllSetName(configFile)
 }
 
-func returnAllSetName(){
+func returnAllSetName(configFile string){
 	log.Info().Msg("Endpoint Hit: returnAllCardsBySet")
 
-	conf, err := env.ReceiveEnvVars()
+	conf, err := config.GetConfig(configFile)
 	if err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive env vars")
 	}
@@ -36,16 +37,16 @@ func returnAllSetName(){
 
 	setNames, err := allSetNames(client, ctx, conf)
 	
-	if err = insertSetNames(setNames, client, ctx); err != nil {
+	if err = insertSetNames(setNames, client, ctx, conf); err != nil {
 		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert set names into collection")
 	}
 }
 
-func allSetNames(client *mongo.Client, ctx context.Context, conf env.Conf)([]string, error){
+func allSetNames(client *mongo.Client, ctx context.Context, conf config.Config)([]string, error){
 	var filter = bson.M{}
 	var cards []mongodb.Card
 
-	collection := client.Database(conf.DbName).Collection(conf.DbCollAllCards)
+	collection := client.Database(conf.DBName).Collection(conf.DBCollectionAllcards)
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
 	cursor, err := collection.Find(ctx, filter)
@@ -71,9 +72,9 @@ func allSetNames(client *mongo.Client, ctx context.Context, conf env.Conf)([]str
 	return setNames, err
 }
 
-func buildClient(conf env.Conf)(*mongo.Client, context.Context, error){
+func buildClient(conf config.Config)(*mongo.Client, context.Context, error){
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DbUser+":"+conf.DbPass+"@"+conf.DbPort+"/"+conf.DbName))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DBUser+":"+conf.DBPass+"@"+conf.DBPort+"/"+conf.DBName))
 	if err != nil {
 		log.Error().Err(err)
 		return client, nil, err
@@ -107,12 +108,7 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func insertSetNames(setNames []string, client *mongo.Client, ctx context.Context) error {
-	conf, err := env.ReceiveEnvVars()
-	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return err
-	}
+func insertSetNames(setNames []string, client *mongo.Client, ctx context.Context, conf config.Config) error {
 
 	var newSetNames = SetNameInfo{
 		SetName:  setNames,
@@ -120,18 +116,18 @@ func insertSetNames(setNames []string, client *mongo.Client, ctx context.Context
 		Modified: "",
 	}
 
-	collection := client.Database(conf.DbName).Collection("setNames")
+	collection := client.Database(conf.DBName).Collection("setNames")
 	log.Info().Timestamp().Msgf("Successful: created collection:\n", collection)
 
 	//FIXME: Upsert logic or directly with Mongos Query language -> this is a hack
-	if err = collection.Drop(ctx); err != nil {
+	if err := collection.Drop(ctx); err != nil {
 		log.Error().Timestamp().Err(err)
 		return err
 	}
 
-	_, err = collection.InsertOne(ctx, newSetNames)
+	_, err := collection.InsertOne(ctx, newSetNames)
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db: %v\n", conf.DbName)
+		log.Error().Timestamp().Err(err).Msgf("Error: couldn't insert into collection of db: %v\n", conf.DBName)
 		return err
 	}
 

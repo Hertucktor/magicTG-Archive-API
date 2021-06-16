@@ -5,7 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"magicTGArchive/internal/pkg/env"
+	"magicTGArchive/internal/pkg/config"
 	"time"
 )
 
@@ -14,18 +14,19 @@ func main() {
 	var page = 1
 	var delimiter = 1
 
-	client, ctx, err := ImporterClient()
+	configFile := "config.yml"
+	conf, err := config.GetConfig(configFile)
 	if err != nil {
-		log.Fatal().Timestamp().Err(err)
+		log.Fatal().Timestamp().Err(err).Msg("")
 	}
 
-	conf, err := env.ReceiveEnvVars()
+
+	client, ctx, err := ImporterClient(conf.DBUser, conf.DBPass, conf.DBPort, conf.DBName)
 	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't receive env vars")
+		log.Fatal().Timestamp().Err(err).Msg("")
 	}
 
 	log.Info().Msgf("Start of import: %v", time.Now().Unix())
-
 	for delimiter != 0{
 		requestAllCards, err := RequestAllCards(page)
 		if err != nil {
@@ -79,23 +80,14 @@ func pageImpression(page int){
 	}
 }
 
-func ImporterClient() (*mongo.Client, context.Context, error) {
-	conf, err := env.ReceiveEnvVars()
+func ImporterClient(dbUser, dbPass, dbPort, dbName string) (*mongo.Client, context.Context, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+dbUser+":"+dbPass+"@"+dbPort+"/"+dbName))
 	if err != nil {
-		log.Error().Timestamp().Err(err).Msg("Error: couldn't receive env vars")
-		return nil, nil, err
-	}
-
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+conf.DbUser+":"+conf.DbPass+"@"+conf.DbPort+"/"+conf.DbName))
-	if err != nil {
-		log.Error().Err(err)
 		return client, nil, err
 	}
 
 	ctx := context.Background()
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Error().Err(err)
+	if err = client.Connect(ctx);err != nil {
 		return client, ctx, err
 	}
 

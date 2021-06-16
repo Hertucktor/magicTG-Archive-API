@@ -17,7 +17,6 @@ func main() {
 }
 
 func selectImgToCompare(uploadedImg string, compareImg string) error{
-	// Open photos.
 	imgA, err := images.Open(uploadedImg)
 	if err != nil {
 		log.Error().Timestamp().Err(err)
@@ -27,11 +26,9 @@ func selectImgToCompare(uploadedImg string, compareImg string) error{
 		log.Error().Timestamp().Err(err)
 	}
 
-	// Calculate hashes and image sizes.
 	hashA, imgSizeA := images.Hash(imgA)
 	hashB, imgSizeB := images.Hash(imgB)
 
-	// Image comparison.
 	if images.Similar(hashA, hashB, imgSizeA, imgSizeB) {
 		fmt.Println("Images are similar.")
 	} else {
