@@ -13,15 +13,6 @@ func main() {
 		log.Fatal().Err(err).Msg("")
 	}
 
-	imgInfos, err := csvReader.ConvertCSVEntriesIntoStruct(filePath)
-	if err != nil {
-		log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't ")
-	}
-
-	for _, imgInfo := range imgInfos.Imgs{
-		if err = csvReader.InsertImgInfo(imgInfo,conf.DBName, conf.DBCollectionSetimages); err != nil {
-			log.Fatal().Timestamp().Err(err).Msg("Fatal: couldn't insert ImgData into db")
-		}
-	}
+	csvReader.TransferCSVDataToDatabase(filePath, conf)
 
 }
