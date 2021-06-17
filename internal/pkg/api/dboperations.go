@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -52,7 +52,7 @@ func AllCards(dbName string, dbCollection string, client *mongo.Client, ctx cont
 	return cards, err
 }
 
-func AllCardsBySet(setName string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
+func AllCardsBySet(setName string, dbName string, dbCollection string, client *mongo.Client, ctx context.Context)([]mongodb.Card, error){
 	var filter = bson.M{"setName": setName}
 	var cards []mongodb.Card
 
@@ -77,7 +77,7 @@ func AllCardsBySet(setName string,dbName string, dbCollection string, client *mo
 	return cards, err
 }
 
-func SingleCardInfo(setName string, number string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
+func ReadSingleCardEntry(setName string, number string,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) (mongodb.Card, error) {
 	var readFilter = bson.M{"setName": setName, "number": number}
 	var card mongodb.Card
 
@@ -105,7 +105,7 @@ func DeleteSingleCard(setName string, number string,dbName string, dbCollection 
 	return deleteResult, err
 }
 
-func UpdateSingleCard(setName string, number string, cardQuantity int,dbName string, dbCollection string, client *mongo.Client, ctx context.Context) error {
+func UpdateSingelCard(setName string, number string, cardQuantity int, dbName string, dbCollection string, client *mongo.Client, ctx context.Context) error {
 	var newQuantity = cardQuantity+1
 	var updateFilter = bson.M{"setName": setName, "number":number}
 	var updateSet = bson.D{

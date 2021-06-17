@@ -14,6 +14,7 @@ type Config struct {
 	DBCollectionAllcards string `yaml:"dbCollectionAllcards"`
 	DBCollectionMycards string `yaml:"dbCollectionMycards"`
 	DBCollectionSetimages string `yaml:"dbCollectionSetimages"`
+	DBCollectionSetNames string `yaml:"dbCollectionSetNames"`
 }
 
 func GetConfig(configFile string) (Config, error) {

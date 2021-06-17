@@ -1,10 +1,18 @@
-package main
+package csvReader
 
 import (
 	"encoding/csv"
 	"github.com/rs/zerolog/log"
 	"os"
 )
+
+type ImgCollection struct {
+	Imgs []Img
+}
+type Img struct {
+	SetName string
+	ImgLink string
+}
 
 func ReadCSV(fileName string) ([][]string, error){
 	csvFile, err := os.Open(fileName)

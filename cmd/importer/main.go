@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"magicTGArchive/internal/pkg/config"
+	"magicTGArchive/internal/pkg/importer"
 	"time"
 )
 
@@ -28,23 +29,23 @@ func main() {
 
 	log.Info().Msgf("Start of import: %v", time.Now().Unix())
 	for delimiter != 0{
-		requestAllCards, err := RequestAllCards(page)
+		requestAllCards, err := importer.RequestAllCards(page)
 		if err != nil {
 			log.Fatal().Timestamp().Err(err).Msg("Fatal: API Request threw error")
 		}
 
 		for _, card := range requestAllCards.Cards{
 			//If Card is in Database, update modified else insert card
-			found, err := FindCard(card.SetName, card.Number, client, ctx, conf)
+			found, err := importer.FindCard(card.SetName, card.Number, client, ctx, conf)
 			if err != nil {
 				log.Fatal().Timestamp().Err(err).Msgf("Fatal: problem reading card from database: %v",card)
 			}
 			if found != true{
-				if err = InsertImportCard(card, client, ctx, conf); err != nil {
+				if err = importer.InsertImportCard(card, client, ctx, conf); err != nil {
 					log.Fatal().Timestamp().Err(err).Msgf("Fatal: couldn't insert dataset: %v",card)
 				}
 			}else {
-				if err = UpdateSingleCard(card, card.SetName, card.Number, client, ctx, conf); err != nil{
+				if err = importer.UpdateSingleCard(card, card.SetName, card.Number, client, ctx, conf); err != nil{
 					log.Fatal().Timestamp().Err(err).Msgf("Fatal: couldn't update dataset:\n",card)
 				}
 			}

@@ -1,5 +1,7 @@
 package main
 
+import "magicTGArchive/internal/pkg/api"
+
 func main() {
-	setupRoutes()
+	api.SetupRoutes()
 }

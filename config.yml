@@ -6,3 +6,4 @@ dbName: Magic:The-Gathering-Archive
 dbCollectionAllcards: allCards
 dbCollectionMycards: myCards
 dbCollectionSetimages: imgInfo
+dbCollectionSetNames: setNames

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type SetNameInfo struct {
 	Modified string   `json:"modified" bson:"modified"`
 }
 
-func setupRoutes(){
+func SetupRoutes(){
 	var port = ":8080"
 	log.Info().Msgf("Starting API on port %v", port)
 
@@ -28,18 +28,18 @@ func setupRoutes(){
 
 	//Status calls
 	status := myRouter.PathPrefix("/status").Subrouter()
-	status.HandleFunc("/alive",statusAlive).Methods(http.MethodGet)
-	status.HandleFunc("/check",statusCheck).Methods(http.MethodGet)
+	status.HandleFunc("/alive", statusAlive).Methods(http.MethodGet)
+	status.HandleFunc("/check", statusCheck).Methods(http.MethodGet)
 
 	//CRUD Operations for card info
 	api := myRouter.PathPrefix("/api").Subrouter()
 	api.Use(mux.CORSMethodMiddleware(api), corsOriginMiddleware)
-	api.HandleFunc("/card", createNewCardEntry).Methods(http.MethodPost)
-	api.HandleFunc("/cards", returnAllCardEntries).Methods(http.MethodGet) //From allCards Coll
-	api.HandleFunc("/cards/set-names/{setName}", returnAllCardsBySet).Methods(http.MethodGet) //From allCards Coll
-	api.HandleFunc("/cards/collector-numbers/{number}/set-names/{setName}", returnSingleCardEntry).Methods(http.MethodGet) //From myCards Coll
-	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", updateSingleCardEntry).Methods(http.MethodPut)
-	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", deleteSingleCardEntry).Methods(http.MethodDelete)
+	api.HandleFunc("/card", createNewCardEntryOnAllCardCollection).Methods(http.MethodPost)
+	api.HandleFunc("/cards", returnAllCardEntriesFromAllCardCollection).Methods(http.MethodGet)                            //From allCards Coll
+	api.HandleFunc("/cards/set-names/{setName}", returnAllCardsBySetFromAllCardCollection).Methods(http.MethodGet)         //From allCards Coll
+	api.HandleFunc("/cards/collector-numbers/{number}/set-names/{setName}", readFromOwnCollection).Methods(http.MethodGet) //From myCards Coll
+	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", updateSingleCardFromOwnCollection).Methods(http.MethodPut)
+	api.HandleFunc("/cards/collector-number/{number}/set-names/{setName}", deleteSingleCardFromOwnCollection).Methods(http.MethodDelete)
 	api.HandleFunc("/cards/set-names", returnAllSetName).Methods(http.MethodGet)
 
 	//API Operations for img info
@@ -61,7 +61,7 @@ func setupRoutes(){
 }
 
 func returnAllSetName(w http.ResponseWriter, r *http.Request){
-	log.Info().Msg("Endpoint Hit: returnAllCardsBySet")
+	log.Info().Msg("Endpoint Hit: returnAllCardsBySetFromAllCardCollection")
 
 	conf, err := config.GetConfig("config.yml")
 	if err != nil {

@@ -1,4 +1,4 @@
-package main
+package csvReader
 
 import (
 	"github.com/rs/zerolog/log"
