@@ -5,3 +5,9 @@ coverage.html
 bin
 csv
 temp
+
+
+# ignore dependencies
+vendor
+go.mod
+go.sum
